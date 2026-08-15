@@ -33,11 +33,16 @@ function AccountArea() {
 
   if (!user) {
     return (
-      <Button asChild variant="outline" size="sm">
-        <Link to="/auth">
-          <UserRound className="size-4" aria-hidden /> Sign in
-        </Link>
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+          <Link to="/auth" search={{ mode: "signin" }}>
+            <UserRound className="size-4" aria-hidden /> Sign in
+          </Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link to="/auth" search={{ mode: "signup" }}>Sign up</Link>
+        </Button>
+      </div>
     );
   }
 

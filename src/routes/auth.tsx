@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -10,7 +10,10 @@ import { Label } from "@/components/ui/label";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
-const searchSchema = z.object({ redirect: z.string().optional() });
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+  mode: z.enum(["signin", "signup"]).optional(),
+});
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search) => searchSchema.parse(search),
@@ -38,13 +41,26 @@ function safeRedirect(value: string | undefined) {
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup">(search.mode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
   const next = safeRedirect(search.redirect);
+
+  useEffect(() => {
+    setMode(search.mode ?? "signin");
+  }, [search.mode]);
+
+  function changeMode(nextMode: "signin" | "signup") {
+    setMode(nextMode);
+    navigate({
+      to: "/auth",
+      search: { redirect: search.redirect, mode: nextMode },
+      replace: true,
+    });
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -65,7 +81,7 @@ function AuthPage() {
         });
         if (error) {
           if (/already|registered|exists/i.test(error.message)) {
-            setMode("signin");
+            changeMode("signin");
             setConfirm("");
             toast.error("An account with this email already exists. Please sign in instead.");
             return;
@@ -74,7 +90,7 @@ function AuthPage() {
         }
         // Supabase returns a user with no identities when the email is taken.
         if (data.user && data.user.identities && data.user.identities.length === 0) {
-          setMode("signin");
+          changeMode("signin");
           setConfirm("");
           toast.error("An account with this email already exists. Please sign in instead.");
           return;
@@ -125,6 +141,24 @@ function AuthPage() {
       <Section>
         <div className="mx-auto max-w-md">
           <div className="surface-panel p-6">
+            <div className="mb-5 grid grid-cols-2 rounded-lg bg-muted p-1" aria-label="Account access">
+              <Button
+                type="button"
+                variant={mode === "signin" ? "secondary" : "ghost"}
+                onClick={() => changeMode("signin")}
+                aria-pressed={mode === "signin"}
+              >
+                Sign in
+              </Button>
+              <Button
+                type="button"
+                variant={mode === "signup" ? "secondary" : "ghost"}
+                onClick={() => changeMode("signup")}
+                aria-pressed={mode === "signup"}
+              >
+                Sign up
+              </Button>
+            </div>
             <Button variant="outline" className="w-full" onClick={onGoogle}>
               Continue with Google
             </Button>
@@ -192,7 +226,7 @@ function AuthPage() {
             <button
               type="button"
               className="mt-4 w-full text-sm text-muted-foreground hover:text-foreground"
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              onClick={() => changeMode(mode === "signin" ? "signup" : "signin")}
             >
               {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
             </button>
