@@ -1,5 +1,5 @@
-import { C as createInlineCssStyleAsset, I as createLRUCache, L as invariant, N as rootRouteId, R as decodePath, S as createInlineCssPlaceholderAsset, T as getStylesheetHref, b as GLOBAL_TSR, x as TSR_SCRIPT_BARRIER_ID } from "./react-router+[...].mjs";
 import { n as globalthis_default } from "../supabase__realtime-js+unenv.mjs";
+import { A as _getRenderedMatches, B as rootRouteId, C as TSR_SCRIPT_BARRIER_ID, D as getStylesheetHref, F as dehydrateSsrMatchId, M as invariant, N as createLRUCache, P as decodePath, S as GLOBAL_TSR, T as createInlineCssStyleAsset, w as createInlineCssPlaceholderAsset } from "./react-router+[...].mjs";
 //#region node_modules/seroval/dist/index.js
 var SYM_ASYNC_ITERATOR = Symbol.asyncIterator;
 var SYM_HAS_INSTANCE = Symbol.hasInstance;
@@ -3041,11 +3041,6 @@ var defaultSerovalPlugins = [
 	})
 ];
 //#endregion
-//#region node_modules/@tanstack/router-core/dist/esm/ssr/ssr-match-id.js
-function dehydrateSsrMatchId(id) {
-	return id.replaceAll("/", "\0");
-}
-//#endregion
 //#region node_modules/@tanstack/router-core/dist/esm/ssr/tsrScript.js
 var tsrScript_default = "self.$_TSR={h(){this.hydrated=!0,this.c()},e(){this.streamEnded=!0,this.c()},c(){this.hydrated&&this.streamEnded&&(delete self.$_TSR,delete self.$R.tsr)},p(e){this.initialized?e():this.buffer.push(e)},buffer:[]}";
 //#endregion
@@ -3066,7 +3061,7 @@ function dehydrateMatch(match) {
 		["error", "e"],
 		["ssr", "ssr"]
 	]) if (match[key] !== void 0) dehydratedMatch[shorthand] = match[key];
-	if (match.globalNotFound) dehydratedMatch.g = true;
+	if (match._notFound) dehydratedMatch.g = true;
 	return dehydratedMatch;
 }
 var INITIAL_SCRIPTS = [getCrossReferenceHeader(SCOPE_ID), tsrScript_default];
@@ -3262,7 +3257,7 @@ function attachRouterServerSsrUtils({ router, manifest, getRequestAssets }) {
 	router.ssr = { get manifest() {
 		if (!manifest) return manifest;
 		const requestAssets = getRequestAssets?.();
-		const matches = router.stores.matches.get();
+		const matches = _getRenderedMatches(router.stores.matches.get());
 		const hasAssets = hasRequestAssets(requestAssets);
 		if (!hasAssets && !manifest.inlineCss) return manifest;
 		let inlineCssAsset;
@@ -3327,7 +3322,7 @@ function attachRouterServerSsrUtils({ router, manifest, getRequestAssets }) {
 		},
 		dehydrate: async (opts) => {
 			if (_dehydrated) invariant();
-			let matchesToDehydrate = router.stores.matches.get();
+			let matchesToDehydrate = _getRenderedMatches(router.stores.matches.get());
 			if (router.isShell()) matchesToDehydrate = matchesToDehydrate.slice(0, 1);
 			const matches = matchesToDehydrate.map(dehydrateMatch);
 			let manifestToDehydrate = void 0;
@@ -3352,9 +3347,8 @@ function attachRouterServerSsrUtils({ router, manifest, getRequestAssets }) {
 				manifest: manifestToDehydrate,
 				matches
 			};
-			const lastMatchId = matchesToDehydrate[matchesToDehydrate.length - 1]?.id;
-			if (lastMatchId) dehydratedRouter.lastMatchId = dehydrateSsrMatchId(lastMatchId);
 			const dehydratedData = await router.options.dehydrate?.();
+			if (cleanupStarted) return;
 			if (dehydratedData) dehydratedRouter.dehydratedData = dehydratedData;
 			_dehydrated = true;
 			const trackPlugins = { didRun: false };
@@ -3588,4 +3582,47 @@ function mergeHeaders(...headers) {
 	}, new Headers());
 }
 //#endregion
-export { defaultSerovalPlugins as a, makeSerovalPlugin as c, toCrossJSONStream as d, getOrigin as i, fromJSON as l, attachRouterServerSsrUtils as n, createRawStreamRPCPlugin as o, getNormalizedURL as r, createSerializationAdapter as s, mergeHeaders as t, toCrossJSONAsync as u };
+//#region node_modules/@tanstack/router-core/dist/esm/ssr/createRequestHandler.js
+var requestWaiters = /* @__PURE__ */ new WeakMap();
+function removeRequestWaiter(waiters, index, reject) {
+	if (waiters[index] !== reject) return;
+	if (index !== waiters.length - 1) {
+		waiters[index] = void 0;
+		return;
+	}
+	waiters.pop();
+	while (waiters.length && waiters[waiters.length - 1] === void 0) waiters.pop();
+}
+function waitForRequest(value, signal, onLate) {
+	const promise = Promise.resolve(value);
+	if (signal.aborted) {
+		promise.then(onLate, () => {});
+		return Promise.reject(signal.reason);
+	}
+	return new Promise((resolve, reject) => {
+		let waiters = requestWaiters.get(signal);
+		let index;
+		if (waiters) index = waiters.push(reject) - 1;
+		else {
+			const newWaiters = [reject];
+			waiters = newWaiters;
+			index = 0;
+			requestWaiters.set(signal, newWaiters);
+			signal.addEventListener("abort", () => {
+				requestWaiters.delete(signal);
+				for (const rejectWaiter of newWaiters) rejectWaiter?.(signal.reason);
+				newWaiters.length = 0;
+			}, { once: true });
+		}
+		promise.then((result) => {
+			removeRequestWaiter(waiters, index, reject);
+			if (signal.aborted) onLate?.(result);
+			else resolve(result);
+		}, (error) => {
+			removeRequestWaiter(waiters, index, reject);
+			reject(error);
+		});
+	});
+}
+//#endregion
+export { getOrigin as a, createSerializationAdapter as c, toCrossJSONAsync as d, toCrossJSONStream as f, getNormalizedURL as i, makeSerovalPlugin as l, mergeHeaders as n, defaultSerovalPlugins as o, attachRouterServerSsrUtils as r, createRawStreamRPCPlugin as s, waitForRequest as t, fromJSON as u };

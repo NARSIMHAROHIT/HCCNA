@@ -93,7 +93,7 @@ function renderErrorPage() {
 }
 var serverEntryPromise;
 async function getServerEntry() {
-	if (!serverEntryPromise) serverEntryPromise = import("./server-ClbIPfyi.mjs").then((n) => n.a).then((n) => n.t).then((m) => m.default ?? m);
+	if (!serverEntryPromise) serverEntryPromise = import("./server-Cc0YOX7k.mjs").then((n) => n.t).then((m) => m.default ?? m);
 	return serverEntryPromise;
 }
 async function normalizeCatastrophicSsrResponse(response) {
@@ -127,4 +127,4 @@ var server_default = { async fetch(request, env, ctx) {
 	}
 } };
 //#endregion
-export { server_default as default, renderErrorPage as t };
+export { server_default as default };

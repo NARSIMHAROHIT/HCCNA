@@ -1,8 +1,7 @@
 import { r as __toESM } from "../../_runtime.mjs";
-import { a as dispatchDiscreteCustomEvent, c as createContextScope, d as useComposedRefs, f as require_react_dom, i as Primitive, m as require_react, o as useControllableState, p as require_jsx_runtime, r as Presence, s as useLayoutEffect2, u as createSlot } from "./react-checkbox+[...].mjs";
+import { a as dispatchDiscreteCustomEvent, c as useLayoutEffect2, d as createSlot, f as useComposedRefs, i as Primitive, l as createContextScope, m as require_react, o as require_react_dom, p as require_jsx_runtime, r as Presence, s as useControllableState } from "./react-checkbox+[...].mjs";
 import { t as composeEventHandlers } from "../radix-ui__primitive.mjs";
 //#region node_modules/tslib/tslib.es6.mjs
-var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var __assign = function() {
 	__assign = Object.assign || function __assign(t) {
 		for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -59,6 +58,7 @@ function __spreadArray(to, from, pack) {
 }
 //#endregion
 //#region node_modules/@radix-ui/react-id/dist/index.mjs
+var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 var __defProp$6 = Object.defineProperty;
 var __name$6 = (target, value) => __defProp$6(target, "name", {
 	value,

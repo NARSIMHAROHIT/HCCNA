@@ -1,5 +1,5 @@
 import { p as require_jsx_runtime } from "../_libs/@radix-ui/react-checkbox+[...].mjs";
-import { h as Link } from "../_libs/@tanstack/react-router+[...].mjs";
+import { _ as Link } from "../_libs/@tanstack/react-router+[...].mjs";
 import { d as MapPin, h as CalendarDays, n as Users, p as Clock } from "../_libs/lucide-react.mjs";
 import { n as formatMoney, t as formatInTimezone } from "./timezone-BD2Gbves.mjs";
 import { t as Badge } from "./badge-D1Dupn2y.mjs";

@@ -1,0 +1,1 @@
+import{T as e,w as t}from"./useBaseQuery-Bo-PjOWw.js";var n=t({method:`POST`}).handler(e(`914cf93375092dbc15d00113a910b5961bab889590ca7b711696b9991df91a71`)),r=t({method:`GET`}).handler(e(`ae5e4e0b556a82599c8d6ce5e2c7f800ce5b87b941d3d661f975ad05f4cf4201`));export{r as n,n as t};
