@@ -4,6 +4,8 @@ import { ArrowRight, CalendarDays, Sparkles, Sunrise, Sunset } from "lucide-reac
 import heroImage from "@/assets/temple-hero.jpg";
 import heroImage1 from "@/assets/temple-hero-1.jpg";
 import heroImage2 from "@/assets/temple-hero-2.jpg";
+import logoImage from "@/assets/logo.jpg";
+
 import { EventCard, ServiceCard } from "@/components/site/cards";
 import { NewsletterSignup } from "@/components/site/NewsletterSignup";
 import { DataRow, GoldRule, Section, SectionHeading } from "@/components/site/primitives";

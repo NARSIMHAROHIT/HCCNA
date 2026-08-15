@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { useSession } from "@/hooks/useSession";
 import { siteQuery } from "@/lib/queries";
 import { supabase } from "@/integrations/supabase/client";
+import logoImage from "@/assets/logo.jpg";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -80,6 +81,7 @@ export function Header() {
       {/* TEMPLE NAME - TOP */}
       <div className="border-b border-border/60 px-4 py-5 text-center sm:px-6 md:py-6">
         <Link to="/" className="inline-block">
+          <img src={logoImage}alt="Hindu Cultural Center logo"className="size-20 shrink-0 object-contain sm:size-24 md:size-28"/>
           <h1 className="font-display text-3xl leading-tight md:text-5xl">{temple.name}</h1>
          <p className="font-display text-lg leading-tight md:text-lg">  A sarvajan mandir for worship, learning and gathering</p>
           <p className="mt-2 font-display text-lg leading-tight md:text-sm"> प्रज्ञानं ब्रह्म</p>
