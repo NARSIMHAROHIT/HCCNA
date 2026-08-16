@@ -1,1 +1,0 @@
-function e(e,t,n={dateStyle:`medium`,timeStyle:`short`}){let r=typeof e==`string`?new Date(e):e;return new Intl.DateTimeFormat(`en-US`,{timeZone:t,...n}).format(r)}function t(e,t=`USD`){return new Intl.NumberFormat(`en-US`,{style:`currency`,currency:t,minimumFractionDigits:0}).format(e/100)}export{t as n,e as t};

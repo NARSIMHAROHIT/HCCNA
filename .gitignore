@@ -35,3 +35,9 @@ dist-ssr
 .env
 node_modules/
 dist/
+.vercel
+.env*
+.output/
+.vercel/
+.output/
+.vercel/
