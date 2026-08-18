@@ -69,6 +69,7 @@ jobs:
         with:
           name: hccna-production
           path: .output/
+          include-hidden-files: true
           retention-days: 1
 
   deploy:
