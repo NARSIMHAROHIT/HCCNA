@@ -13,6 +13,10 @@ concurrency:
   group: production
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: 22
+  APP_DIR: /var/www/hccna
+
 jobs:
   build:
     name: Build React Application
@@ -25,13 +29,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Run lint
+        run: npm run lint
+
       - name: Build React application
+        env:
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         run: npm run build
 
       - name: Verify build
@@ -41,14 +52,20 @@ jobs:
             exit 1
           fi
 
-          echo "Build completed successfully."
-          ls -la dist
+          if [ ! -f "dist/index.html" ]; then
+            echo "ERROR: dist/index.html was not created."
+            exit 1
+          fi
+
+          echo "Build successful."
+          du -sh dist
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: react-build
+          name: react-production-build
           path: dist/
+          retention-days: 1
 
   deploy:
     name: Deploy to EC2
@@ -56,33 +73,81 @@ jobs:
     needs: build
 
     steps:
-      - name: Download build artifact
+      - name: Download build
         uses: actions/download-artifact@v4
         with:
-          name: react-build
+          name: react-production-build
           path: dist
 
       - name: Configure SSH
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/ec2_key
+
           chmod 600 ~/.ssh/ec2_key
 
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
 
-      - name: Deploy React application
+      - name: Test SSH connection
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          rsync -avz --delete \
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "echo 'SSH connection successful'"
+
+      - name: Prepare EC2 directory
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "sudo mkdir -p ${{ env.APP_DIR }} && sudo chown -R $EC2_USER:$EC2_USER ${{ env.APP_DIR }}"
+
+      - name: Deploy React files
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          rsync \
+            -avz \
+            --delete \
             -e "ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=yes" \
             dist/ \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/hccna/
+            "$EC2_USER@$EC2_HOST:${{ env.APP_DIR }}/"
 
-      - name: Restart Nginx
+      - name: Reload Nginx
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          ssh -i ~/.ssh/ec2_key \
-            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
             "sudo nginx -t && sudo systemctl reload nginx"
 
-      - name: Deployment complete
+      - name: Verify deployment
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          echo "React application successfully deployed to EC2."
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "test -f ${{ env.APP_DIR }}/index.html"
+
+          echo "======================================"
+          echo "React application deployed successfully"
+          echo "======================================"
