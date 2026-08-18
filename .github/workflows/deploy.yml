@@ -16,6 +16,8 @@ concurrency:
 env:
   NODE_VERSION: 22
   APP_DIR: /var/www/hccna
+  APP_NAME: hccna
+  APP_PORT: 3000
 
 jobs:
   build:
@@ -42,21 +44,31 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         run: npm run build
 
-      - name: Verify build output
+      - name: Verify Nitro build
         run: |
-          if [ ! -d ".output/public" ]; then
-            echo "ERROR: .output/public directory was not created."
-            exit 1
-          fi
+          echo "Checking .output..."
 
-          echo "Build output:"
-          find .output/public -maxdepth 2 -type f | sort
+          test -d .output
+          test -d .output/public
+          test -d .output/server
+          test -f .output/server/index.mjs
 
-      - name: Upload production artifact
+          echo ""
+          echo "===== SERVER BUILD ====="
+          ls -la .output/server
+
+          echo ""
+          echo "===== PUBLIC BUILD ====="
+          ls -la .output/public
+
+          echo ""
+          echo "Nitro build verified successfully."
+
+      - name: Upload complete production build
         uses: actions/upload-artifact@v4
         with:
           name: hccna-production
-          path: .output/public/
+          path: .output/
           retention-days: 1
 
   deploy:
@@ -65,11 +77,24 @@ jobs:
     needs: build
 
     steps:
-      - name: Download production artifact
+      - name: Download complete production build
         uses: actions/download-artifact@v4
         with:
           name: hccna-production
-          path: public
+          path: .output
+
+      - name: Verify downloaded server
+        run: |
+          echo "===== DOWNLOADED BUILD ====="
+          find .output -maxdepth 2 -type f | sort | head -100
+
+          echo ""
+          echo "Checking Nitro server..."
+
+          test -f .output/server/index.mjs
+
+          echo "Nitro server found:"
+          ls -lh .output/server/index.mjs
 
       - name: Configure SSH
         env:
@@ -79,7 +104,6 @@ jobs:
           mkdir -p ~/.ssh
 
           printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/ec2_key
-
           chmod 600 ~/.ssh/ec2_key
 
           ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
@@ -95,7 +119,7 @@ jobs:
             "$EC2_USER@$EC2_HOST" \
             "echo 'SSH connection successful'"
 
-      - name: Prepare EC2 directory
+      - name: Prepare EC2 application directory
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -106,7 +130,7 @@ jobs:
             "$EC2_USER@$EC2_HOST" \
             "sudo mkdir -p ${{ env.APP_DIR }} && sudo chown -R $EC2_USER:$EC2_USER ${{ env.APP_DIR }}"
 
-      - name: Deploy public files
+      - name: Deploy complete Nitro build
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -115,10 +139,10 @@ jobs:
             -avz \
             --delete \
             -e "ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=yes" \
-            public/ \
-            "$EC2_USER@$EC2_HOST:${{ env.APP_DIR }}/"
+            .output/ \
+            "$EC2_USER@$EC2_HOST:${{ env.APP_DIR }}/.output/"
 
-      - name: Reload Nginx
+      - name: Verify Nitro server on EC2
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -127,9 +151,9 @@ jobs:
             -i ~/.ssh/ec2_key \
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
-            "sudo nginx -t && sudo systemctl reload nginx"
+            "test -f ${{ env.APP_DIR }}/.output/server/index.mjs && echo 'Nitro server successfully deployed'"
 
-      - name: Verify deployment
+      - name: Install PM2 if needed
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -138,8 +162,104 @@ jobs:
             -i ~/.ssh/ec2_key \
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
-            "ls -la ${{ env.APP_DIR }}"
+            "command -v pm2 >/dev/null 2>&1 || sudo npm install -g pm2"
 
-          echo "======================================"
-          echo "HCCNA deployment completed"
-          echo "======================================"
+      - name: Stop previous HCCNA process
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "pm2 delete ${{ env.APP_NAME }} >/dev/null 2>&1 || true"
+
+      - name: Start Nitro server with PM2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "cd ${{ env.APP_DIR }} && PORT=${{ env.APP_PORT }} HOST=127.0.0.1 pm2 start .output/server/index.mjs --name ${{ env.APP_NAME }} --cwd ${{ env.APP_DIR }} && pm2 save"
+
+      - name: Configure Nginx
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "sudo tee /etc/nginx/sites-available/hccna >/dev/null <<'NGINX'
+          server {
+              listen 80;
+              listen [::]:80;
+
+              server_name _;
+
+              location / {
+                  proxy_pass http://127.0.0.1:${{ env.APP_PORT }};
+                  proxy_http_version 1.1;
+
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+
+                  proxy_set_header Upgrade \$http_upgrade;
+                  proxy_set_header Connection \"upgrade\";
+              }
+          }
+          NGINX
+
+          sudo ln -sf /etc/nginx/sites-available/hccna /etc/nginx/sites-enabled/hccna
+          sudo rm -f /etc/nginx/sites-enabled/default
+
+          sudo nginx -t
+          sudo systemctl reload nginx"
+
+      - name: Verify PM2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "pm2 status ${{ env.APP_NAME }}"
+
+      - name: Verify application on port 3000
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          sleep 3
+
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "curl -f --max-time 15 http://127.0.0.1:${{ env.APP_PORT }}"
+
+      - name: Verify Nginx
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "curl -f --max-time 15 http://127.0.0.1"
+
+      - name: Deployment complete
+        run: |
+          echo "========================================="
+          echo "HCCNA deployment completed successfully"
+          echo "========================================="
