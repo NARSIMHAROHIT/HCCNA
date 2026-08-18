@@ -27,17 +27,17 @@ done from the website itself.
 
 Sign in and open **Admin** in the header (or go to `/admin`). Tabs:
 
-| Tab | What you edit |
-| --- | --- |
-| Overview | Snapshot of bookings, payments and upcoming events |
-| Temple details | Name, tagline, address, phone, email, social links, history, mission, about text |
-| Timings | Daily opening hours and special-date timings |
-| Poojas & prices | Pooja categories, each seva's price, duration, description, and deity photos |
-| Events & notices | Events, timings, sponsors, pooja item lists, photo galleries, announcements |
-| Board & donors | Board members and the donor wall |
-| People & admins | Administrators, newsletter subscribers, event volunteers |
-| Payments | Online payments and receipts |
-| Audit log | Who changed what, and when |
+| Tab              | What you edit                                                                    |
+| ---------------- | -------------------------------------------------------------------------------- |
+| Overview         | Snapshot of bookings, payments and upcoming events                               |
+| Temple details   | Name, tagline, address, phone, email, social links, history, mission, about text |
+| Timings          | Daily opening hours and special-date timings                                     |
+| Poojas & prices  | Pooja categories, each seva's price, duration, description, and deity photos     |
+| Events & notices | Events, timings, sponsors, pooja item lists, photo galleries, announcements      |
+| Board & donors   | Board members and the donor wall                                                 |
+| People & admins  | Administrators, newsletter subscribers, event volunteers                         |
+| Payments         | Online payments and receipts                                                     |
+| Audit log        | Who changed what, and when                                                       |
 
 Each section is a simple list: **Add** creates a row, the pencil edits it, the
 trash deletes it. Changes appear on the public site immediately.
@@ -45,8 +45,8 @@ trash deletes it. Changes appear on the public site immediately.
 ## 4. Common tasks
 
 **Add a priest** — Board & donors → Priests → Add. Fill in name, title, photo
-URL, languages, specializations, *serving since*, and *working days at the
-temple* (comma separated, e.g. `Monday, Tuesday, Saturday`).
+URL, languages, specializations, _serving since_, and _working days at the
+temple_ (comma separated, e.g. `Monday, Tuesday, Saturday`).
 
 **Add an event** — Events & notices → Events → Add. Set title, description,
 start and end time, location, image, whether registration is required, the fee,
@@ -54,7 +54,7 @@ and the sponsorship amount. Tick **annual** for yearly festivals so it appears o
 the yearly calendar.
 
 **Sponsors and pooja items for an event** — open the event's row and use the
-*Items* and *Sponsor* fields. They show on the public event page next to the
+_Items_ and _Sponsor_ fields. They show on the public event page next to the
 pooja.
 
 **Past-event photos** — Events & notices → Event photos. Attach a photo to an
@@ -64,7 +64,7 @@ event (or just a year) and it appears in the gallery.
 image; poojas that name that deity show the picture automatically.
 
 **Donor wall** — Board & donors → Donors. Set a tier (e.g. Platinum, Gold) and
-donors are grouped by tier on the public page. Tick *anonymous* to hide a name.
+donors are grouped by tier on the public page. Tick _anonymous_ to hide a name.
 
 **Newsletter & volunteers** — devotees subscribe from the home page and can
 volunteer for a specific event from that event's page. Both lists live under
@@ -72,7 +72,7 @@ People & admins.
 
 ## 5. Images
 
-Paste a public image URL into any *image URL* field (for example a link from the
+Paste a public image URL into any _image URL_ field (for example a link from the
 temple's Google Drive set to "anyone with the link", or any image host). Use
 landscape images around 1600×900 for event and hero pictures.
 

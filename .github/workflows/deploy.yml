@@ -180,13 +180,34 @@ jobs:
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
+
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+
         run: |
           ssh \
             -i ~/.ssh/ec2_key \
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
-            "cd ${{ env.APP_DIR }} && PORT=${{ env.APP_PORT }} HOST=127.0.0.1 pm2 start .output/server/index.mjs --name ${{ env.APP_NAME }} --cwd ${{ env.APP_DIR }} && pm2 save"
-
+            "cd ${{ env.APP_DIR }} && \
+            export SUPABASE_PROJECT_ID='$SUPABASE_PROJECT_ID' && \
+            export SUPABASE_PUBLISHABLE_KEY='$SUPABASE_PUBLISHABLE_KEY' && \
+            export SUPABASE_URL='$SUPABASE_URL' && \
+            export VITE_SUPABASE_PROJECT_ID='$VITE_SUPABASE_PROJECT_ID' && \
+            export VITE_SUPABASE_PUBLISHABLE_KEY='$VITE_SUPABASE_PUBLISHABLE_KEY' && \
+            export VITE_SUPABASE_URL='$VITE_SUPABASE_URL' && \
+            PORT=${{ env.APP_PORT }} \
+            HOST=127.0.0.1 \
+            pm2 start .output/server/index.mjs \
+              --name ${{ env.APP_NAME }} \
+              --cwd ${{ env.APP_DIR }} \
+              --update-env && \
+            pm2 save"
       - name: Configure Nginx
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
