@@ -81,13 +81,18 @@ export function Header() {
       {/* TEMPLE NAME - TOP */}
       <div className="border-b border-border/60 px-4 py-5 text-center sm:px-6 md:py-6">
         <Link to="/" className="inline-block">
-          <img src={logoImage}alt="Hindu Cultural Center logo"className="size-20 shrink-0 object-contain sm:size-24 md:size-28"/>
+
+        <div className="flex items-center justify-center gap-5">
+          <img src="/logo.jpg"alt="Hindu Cultural Center logo"className="h-20 w-20 object-contain md:h-28 md:w-28"/>
+            <div className="text-center">
           <h1 className="font-display text-3xl leading-tight md:text-5xl">{temple.name}</h1>
          <p className="font-display text-lg leading-tight md:text-lg">  A sarvajan mandir for worship, learning and gathering</p>
           <p className="mt-2 font-display text-lg leading-tight md:text-sm"> प्रज्ञानं ब्रह्म</p>
           <p className="mt-2 text-sm text-muted-foreground md:text-base">
           {[temple.city, temple.state].filter(Boolean).join(", ")}
           </p>
+          </div>
+          </div>
 
           <div className="mx-auto mt-3 flex max-w-md items-center justify-center gap-3 text-primary">
             <span className="h-px flex-1 bg-primary/40" />
