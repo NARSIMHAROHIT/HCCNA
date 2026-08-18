@@ -94,7 +94,9 @@ function AdminEvents() {
         singular="item"
         rows={data.eventItems as never}
         primaryField="name"
-        secondaryField={(row) => [eventTitle(row["event_id"]), row["quantity"]].filter(Boolean).join(" · ")}
+        secondaryField={(row) =>
+          [eventTitle(row["event_id"]), row["quantity"]].filter(Boolean).join(" · ")
+        }
         fields={withOptions(ITEM_FIELDS)}
       />
 
@@ -105,7 +107,9 @@ function AdminEvents() {
         singular="photo"
         rows={data.eventPhotos as never}
         primaryField="title"
-        secondaryField={(row) => [row["year"], eventTitle(row["event_id"])].filter(Boolean).join(" · ")}
+        secondaryField={(row) =>
+          [row["year"], eventTitle(row["event_id"])].filter(Boolean).join(" · ")
+        }
         fields={withOptions(PHOTO_FIELDS)}
       />
     </div>

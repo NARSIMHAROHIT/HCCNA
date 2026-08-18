@@ -7,8 +7,18 @@ import { Button } from "@/components/ui/button";
 import { panchangQuery } from "@/lib/queries";
 
 const MONTHS = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export const Route = createFileRoute("/calendar")({
@@ -22,7 +32,10 @@ export const Route = createFileRoute("/calendar")({
           "Location-aware Hindu calendar for North Alabama with daily tithi, nakshatra, yoga, sunrise, sunset and Rahu Kalam.",
       },
       { property: "og:title", content: "Hindu Calendar & Panchang" },
-      { property: "og:description", content: "Daily tithi, nakshatra, sunrise and Rahu Kalam for our location." },
+      {
+        property: "og:description",
+        content: "Daily tithi, nakshatra, sunrise and Rahu Kalam for our location.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -68,7 +81,7 @@ function CalendarPage() {
         title="Hindu calendar"
         description={`Computed for ${data.location.label} (${data.location.timezone}) using the temple's own coordinates.`}
       />
-      
+
       <Section>
         <div className="mb-6 rounded-xl border bg-card/40 p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -88,11 +101,7 @@ function CalendarPage() {
               <Button variant="default" size="sm" onClick={() => jumpToDate(searchDate)}>
                 Search
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => jumpToDate(todayISO)}
-              >
+              <Button variant="outline" size="sm" onClick={() => jumpToDate(todayISO)}>
                 Today
               </Button>
             </div>
@@ -102,9 +111,13 @@ function CalendarPage() {
             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Selected date</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Selected date
+                  </p>
                   <h3 className="mt-1 text-2xl font-display">
-                    {selectedDay.weekdayName}, {selectedDay.day} {MONTHS[Number(selectedDay.date.slice(5, 7)) - 1]} {selectedDay.date.slice(0, 4)}
+                    {selectedDay.weekdayName}, {selectedDay.day}{" "}
+                    {MONTHS[Number(selectedDay.date.slice(5, 7)) - 1]}{" "}
+                    {selectedDay.date.slice(0, 4)}
                   </h3>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -167,7 +180,9 @@ function CalendarPage() {
               >
                 <div className="flex items-baseline justify-between">
                   <p className="font-display text-xl">{d.day}</p>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{d.weekdayName}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                    {d.weekdayName}
+                  </p>
                 </div>
                 <dl className="mt-3 space-y-1 text-xs text-muted-foreground">
                   <div className="flex justify-between gap-3">

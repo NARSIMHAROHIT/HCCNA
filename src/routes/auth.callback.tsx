@@ -16,7 +16,8 @@ function Callback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const target = redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/dashboard";
+    const target =
+      redirect && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/dashboard";
     let cancelled = false;
     supabase.auth.getSession().then(({ data }) => {
       if (cancelled) return;

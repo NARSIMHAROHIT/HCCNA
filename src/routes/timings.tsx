@@ -49,7 +49,10 @@ function Timings() {
 
       <Section>
         {weekly.length === 0 ? (
-          <EmptyState title="Timings are being updated" description="Please call the temple office." />
+          <EmptyState
+            title="Timings are being updated"
+            description="Please call the temple office."
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {DAYS.map((day, index) => {
@@ -61,7 +64,9 @@ function Timings() {
                 <article key={day} className="surface-panel p-5">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg">{day}</h2>
-                    {rows.every((r) => r.is_closed) ? <Badge variant="secondary">Closed</Badge> : null}
+                    {rows.every((r) => r.is_closed) ? (
+                      <Badge variant="secondary">Closed</Badge>
+                    ) : null}
                   </div>
                   <dl className="mt-3">
                     {rows.map((r) => (
@@ -76,7 +81,9 @@ function Timings() {
                           ) : null}
                         </dt>
                         <dd className="whitespace-nowrap text-sm font-semibold">
-                          {r.is_closed ? "Closed" : `${formatClock(r.opens_at)} – ${formatClock(r.closes_at)}`}
+                          {r.is_closed
+                            ? "Closed"
+                            : `${formatClock(r.opens_at)} – ${formatClock(r.closes_at)}`}
                         </dd>
                       </div>
                     ))}
@@ -99,7 +106,9 @@ function Timings() {
                   <p className="text-sm text-muted-foreground">{s.special_date}</p>
                 </div>
                 <p className="whitespace-nowrap text-sm font-semibold">
-                  {s.is_closed ? "Closed" : `${formatClock(s.opens_at)} – ${formatClock(s.closes_at)}`}
+                  {s.is_closed
+                    ? "Closed"
+                    : `${formatClock(s.opens_at)} – ${formatClock(s.closes_at)}`}
                 </p>
               </div>
             ))}

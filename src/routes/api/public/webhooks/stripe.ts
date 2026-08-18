@@ -24,7 +24,10 @@ export const Route = createFileRoute("/api/public/webhooks/stripe")({
           return new Response("Invalid signature", { status: 401 });
         }
 
-        if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+        if (
+          event.type === "checkout.session.completed" ||
+          event.type === "checkout.session.async_payment_succeeded"
+        ) {
           const session = event.data.object;
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           await supabaseAdmin

@@ -122,7 +122,12 @@ export function CrudSection({
               ) : null}
             </div>
             <div className="flex shrink-0 gap-2">
-              <Button size="icon" variant="outline" aria-label="Edit" onClick={() => setEditing(row)}>
+              <Button
+                size="icon"
+                variant="outline"
+                aria-label="Edit"
+                onClick={() => setEditing(row)}
+              >
                 <Pencil className="size-4" aria-hidden />
               </Button>
               {allowDelete ? <DeleteButton table={table} id={row.id} /> : null}
@@ -227,9 +232,7 @@ export function RecordDialog({
             return (
               <div
                 key={f.name}
-                className={
-                  f.full || type === "textarea" ? "space-y-2 sm:col-span-2" : "space-y-2"
-                }
+                className={f.full || type === "textarea" ? "space-y-2 sm:col-span-2" : "space-y-2"}
               >
                 {type === "checkbox" ? (
                   <label className="flex items-center gap-3 pt-6 text-sm">

@@ -69,7 +69,9 @@ function AdminCommunity() {
         singular="donor"
         rows={data.donors as never}
         primaryField="donor_name"
-        secondaryField={(row) => [row["tier"], row["category"], row["year"]].filter(Boolean).join(" · ")}
+        secondaryField={(row) =>
+          [row["tier"], row["category"], row["year"]].filter(Boolean).join(" · ")
+        }
         fields={DONOR_FIELDS}
       />
 

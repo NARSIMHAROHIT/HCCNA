@@ -11,10 +11,14 @@ export const Route = createFileRoute("/contact")({
       { title: "Contact & Directions — HCCNA" },
       {
         name: "description",
-        content: "Temple address, phone, email and directions for the Hindu Cultural Center of North Alabama.",
+        content:
+          "Temple address, phone, email and directions for the Hindu Cultural Center of North Alabama.",
       },
       { property: "og:title", content: "Contact & Directions" },
-      { property: "og:description", content: "Address, phone, email and directions to our temple." },
+      {
+        property: "og:description",
+        content: "Address, phone, email and directions to our temple.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -11,10 +11,14 @@ export const Route = createFileRoute("/events/")({
       { title: "Events & Festivals — HCCNA" },
       {
         name: "description",
-        content: "Upcoming festivals, satsangs, cultural programs and community events at our temple.",
+        content:
+          "Upcoming festivals, satsangs, cultural programs and community events at our temple.",
       },
       { property: "og:title", content: "Events & Festivals" },
-      { property: "og:description", content: "Upcoming festivals and community events at our temple." },
+      {
+        property: "og:description",
+        content: "Upcoming festivals and community events at our temple.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

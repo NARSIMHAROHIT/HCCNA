@@ -51,7 +51,15 @@ export function zonedParts(timezone: string, at: Date) {
     weekday: "short",
   }).formatToParts(at);
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  const weekdayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const weekdayMap: Record<string, number> = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6,
+  };
   return {
     y: Number(get("year")),
     m: Number(get("month")),
@@ -80,7 +88,9 @@ export function isoDate(y: number, m: number, d: number): string {
 }
 
 export function formatMoney(cents: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency, minimumFractionDigits: 0 }).format(
-    cents / 100,
-  );
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 0,
+  }).format(cents / 100);
 }

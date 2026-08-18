@@ -65,7 +65,11 @@ function ProfilePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Devotee portal" title="My profile" description="Used to pre-fill your bookings." />
+      <PageHeader
+        eyebrow="Devotee portal"
+        title="My profile"
+        description="Used to pre-fill your bookings."
+      />
       <Section>
         <form
           className="mx-auto max-w-xl space-y-5"

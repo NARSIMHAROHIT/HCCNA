@@ -92,7 +92,9 @@ export function computeSlots(input: SlotInput): Slot[] {
   const slots: Slot[] = [];
 
   for (const priest of priests) {
-    if (blackouts.some((b) => b.priest_id === priest.id && date >= b.start_date && date <= b.end_date)) {
+    if (
+      blackouts.some((b) => b.priest_id === priest.id && date >= b.start_date && date <= b.end_date)
+    ) {
       continue;
     }
 
@@ -108,7 +110,9 @@ export function computeSlots(input: SlotInput): Slot[] {
     }).length;
     if (sameDayCount >= priest.max_bookings_per_day) continue;
 
-    for (const window of windows.filter((w) => w.priest_id === priest.id && w.day_of_week === weekday)) {
+    for (const window of windows.filter(
+      (w) => w.priest_id === priest.id && w.day_of_week === weekday,
+    )) {
       const windowStart = minutesOf(window.start_time);
       const windowEnd = minutesOf(window.end_time);
       const needed = durationMinutes + bufferMinutes;

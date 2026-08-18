@@ -26,7 +26,8 @@ export const Route = createFileRoute("/events/$slug")({
     }
     const title = `${loaderData.event.title} — HCCNA`;
     const description =
-      loaderData.event.description?.slice(0, 155) ?? `Join us for ${loaderData.event.title} at our temple.`;
+      loaderData.event.description?.slice(0, 155) ??
+      `Join us for ${loaderData.event.title} at our temple.`;
     return {
       meta: [
         { title },
@@ -64,9 +65,12 @@ function EventDetail() {
       <Section>
         <div className="grid gap-10 lg:grid-cols-[1.3fr_0.7fr]">
           <div className="space-y-4 text-base leading-relaxed text-muted-foreground">
-            {(event.description ?? "").split("\n").filter(Boolean).map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
+            {(event.description ?? "")
+              .split("\n")
+              .filter(Boolean)
+              .map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
 
             {items.length ? (
               <div className="surface-panel p-6 text-foreground">
@@ -183,7 +187,6 @@ function EventDetail() {
   );
 }
 
-
 function VolunteerForm({ eventId }: { eventId: string }) {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [fullName, setFullName] = useState("");
@@ -280,7 +283,12 @@ function VolunteerForm({ eventId }: { eventId: string }) {
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="v-notes">Notes</Label>
-            <Textarea id="v-notes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <Textarea
+              id="v-notes"
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+            />
           </div>
           <div className="sm:col-span-2">
             <Button type="submit" disabled={busy || signedIn === null}>

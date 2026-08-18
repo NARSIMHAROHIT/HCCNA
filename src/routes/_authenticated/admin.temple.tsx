@@ -62,10 +62,16 @@ function AdminTemple() {
             ["Tagline", t.tagline],
             ["Phone", t.phone],
             ["Email", t.email],
-            ["Address", [t.address_line1, t.city, t.state, t.postal_code].filter(Boolean).join(", ")],
+            [
+              "Address",
+              [t.address_line1, t.city, t.state, t.postal_code].filter(Boolean).join(", "),
+            ],
             ["Website", t.website],
           ].map(([label, value]) => (
-            <div key={String(label)} className="flex justify-between gap-4 border-b border-border/60 py-2">
+            <div
+              key={String(label)}
+              className="flex justify-between gap-4 border-b border-border/60 py-2"
+            >
               <dt className="text-sm text-muted-foreground">{label}</dt>
               <dd className="text-right text-sm font-semibold">{value || "—"}</dd>
             </div>

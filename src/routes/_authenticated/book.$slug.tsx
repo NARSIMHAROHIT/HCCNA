@@ -13,7 +13,9 @@ import { createBooking, getServiceAvailability } from "@/lib/booking.functions";
 import { formatMoney } from "@/lib/timezone";
 
 export const Route = createFileRoute("/_authenticated/book/$slug")({
-  head: () => ({ meta: [{ title: "Book a Pooja — HCCNA" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Book a Pooja — HCCNA" }, { name: "robots", content: "noindex" }],
+  }),
   component: BookPage,
 });
 
@@ -28,7 +30,11 @@ function BookPage() {
   const book = useServerFn(createBooking);
 
   const [date, setDate] = useState(todayIso());
-  const [selected, setSelected] = useState<{ startsAt: string; priestId: string; label: string } | null>(null);
+  const [selected, setSelected] = useState<{
+    startsAt: string;
+    priestId: string;
+    label: string;
+  } | null>(null);
   const [form, setForm] = useState({
     contactName: "",
     contactPhone: "",
@@ -114,7 +120,9 @@ function BookPage() {
                   <button
                     key={`${s.startsAt}-${s.priestId}`}
                     type="button"
-                    onClick={() => setSelected({ startsAt: s.startsAt, priestId: s.priestId, label: s.label })}
+                    onClick={() =>
+                      setSelected({ startsAt: s.startsAt, priestId: s.priestId, label: s.label })
+                    }
                     className={`rounded-md border px-3 py-2 text-sm transition ${
                       selected?.startsAt === s.startsAt && selected?.priestId === s.priestId
                         ? "border-primary bg-primary text-primary-foreground"

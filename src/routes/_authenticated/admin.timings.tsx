@@ -39,7 +39,9 @@ function AdminTimings() {
       primaryField="label"
       secondaryField={(row) =>
         [
-          row["day_of_week"] === null ? String(row["special_date"] ?? "") : DAYS[Number(row["day_of_week"])],
+          row["day_of_week"] === null
+            ? String(row["special_date"] ?? "")
+            : DAYS[Number(row["day_of_week"])],
           row["is_closed"] ? "Closed" : `${row["opens_at"] ?? "—"} – ${row["closes_at"] ?? "—"}`,
         ]
           .filter(Boolean)

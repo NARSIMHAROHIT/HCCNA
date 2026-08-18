@@ -76,9 +76,13 @@ export function EventCard({ event, timezone }: { event: EventCardData; timezone:
         </div>
         {event.category ? <Badge variant="secondary">{event.category}</Badge> : null}
       </div>
-      <h3 className="mt-4 text-lg leading-snug transition group-hover:text-primary">{event.title}</h3>
+      <h3 className="mt-4 text-lg leading-snug transition group-hover:text-primary">
+        {event.title}
+      </h3>
       {event.description ? (
-        <p className="mt-2 line-clamp-3 flex-1 text-sm text-muted-foreground">{event.description}</p>
+        <p className="mt-2 line-clamp-3 flex-1 text-sm text-muted-foreground">
+          {event.description}
+        </p>
       ) : (
         <div className="flex-1" />
       )}
@@ -175,7 +179,9 @@ export function PriestCard({ priest }: { priest: PriestCardData }) {
         </p>
       ) : null}
       {priest.languages.length ? (
-        <p className="mt-3 text-xs text-muted-foreground">Languages: {priest.languages.join(", ")}</p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Languages: {priest.languages.join(", ")}
+        </p>
       ) : null}
     </article>
   );

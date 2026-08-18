@@ -15,7 +15,9 @@ export function Footer() {
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <p className="font-display text-xl">{t.name}</p>
-          {t.tagline ? <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t.tagline}</p> : null}
+          {t.tagline ? (
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t.tagline}</p>
+          ) : null}
           <address className="mt-5 space-y-2 text-sm not-italic text-muted-foreground">
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />
@@ -102,9 +104,10 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {t.name}. All rights reserved.
           </p>
-          {t.is_demo ? <p>Demo content — replace with your temple&apos;s own information.</p> : null}
+          {t.is_demo ? (
+            <p>Demo content — replace with your temple&apos;s own information.</p>
+          ) : null}
         </div>
-        
       </div>
     </footer>
   );

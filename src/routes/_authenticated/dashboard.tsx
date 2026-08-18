@@ -22,7 +22,10 @@ function Dashboard() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const { data, isLoading } = useQuery({ queryKey: ["dashboard"], queryFn: () => fetchDashboard() });
+  const { data, isLoading } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: () => fetchDashboard(),
+  });
 
   const cancelMutation = useMutation({
     mutationFn: (id: string) => cancel({ data: { id } }),
@@ -106,8 +109,12 @@ function Dashboard() {
                   <div>
                     <p className="font-medium">{b.services?.name ?? "Service"}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatInTimezone(b.starts_at, "UTC", { month: "short", day: "numeric", year: "numeric" })} ·
-                      Ref {b.reference}
+                      {formatInTimezone(b.starts_at, "UTC", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}{" "}
+                      · Ref {b.reference}
                     </p>
                   </div>
                   <Badge variant="secondary">{b.status}</Badge>

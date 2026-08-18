@@ -45,7 +45,11 @@ export const getServiceAvailability = createServerFn({ method: "GET" })
 
     const dayStart = new Date(`${data.date}T00:00:00Z`);
     const [priests, windows, blackouts, bookings] = await Promise.all([
-      supabase.from("priests").select("id, full_name, max_bookings_per_day").in("id", priestIds).eq("is_active", true),
+      supabase
+        .from("priests")
+        .select("id, full_name, max_bookings_per_day")
+        .in("id", priestIds)
+        .eq("is_active", true),
       supabase.from("priest_availability").select("*").in("priest_id", priestIds),
       supabase.from("priest_blackouts").select("*").in("priest_id", priestIds),
       supabase
@@ -123,7 +127,11 @@ export const createBooking = createServerFn({ method: "POST" })
     }).format(startsAt);
 
     const [priests, windows, blackouts, existing] = await Promise.all([
-      pub.from("priests").select("id, full_name, max_bookings_per_day").eq("id", data.priestId).eq("is_active", true),
+      pub
+        .from("priests")
+        .select("id, full_name, max_bookings_per_day")
+        .eq("id", data.priestId)
+        .eq("is_active", true),
       pub.from("priest_availability").select("*").eq("priest_id", data.priestId),
       pub.from("priest_blackouts").select("*").eq("priest_id", data.priestId),
       pub
@@ -266,7 +274,9 @@ export const cancelMyBooking = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!booking || booking.user_id !== context.userId) throw new Error("Booking not found.");
     if (new Date(booking.starts_at).getTime() < Date.now() + 24 * 3600000) {
-      throw new Error("Bookings can only be cancelled more than 24 hours in advance. Please call the temple office.");
+      throw new Error(
+        "Bookings can only be cancelled more than 24 hours in advance. Please call the temple office.",
+      );
     }
     const { error } = await context.supabase
       .from("bookings")
@@ -279,7 +289,9 @@ export const cancelMyBooking = createServerFn({ method: "POST" })
 export const registerForEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({ eventId: z.string().uuid(), attendees: z.number().int().min(1).max(20) }).parse(input),
+    z
+      .object({ eventId: z.string().uuid(), attendees: z.number().int().min(1).max(20) })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.from("event_registrations").upsert(

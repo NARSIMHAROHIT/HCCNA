@@ -13,10 +13,14 @@ export const Route = createFileRoute("/library")({
       { title: "Digital Library — Scriptures & Bhajans | HCCNA" },
       {
         name: "description",
-        content: "Read scriptures, stotras, bhajan collections and study material shared by our temple.",
+        content:
+          "Read scriptures, stotras, bhajan collections and study material shared by our temple.",
       },
       { property: "og:title", content: "Digital Library" },
-      { property: "og:description", content: "Scriptures, stotras and study material from our temple." },
+      {
+        property: "og:description",
+        content: "Scriptures, stotras and study material from our temple.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

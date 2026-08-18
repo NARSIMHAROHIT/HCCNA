@@ -88,7 +88,9 @@ function PayPage() {
       <PageHeader
         eyebrow="Seva offering"
         title={service.name}
-        description={service.short_description ?? "Complete the sankalpam details and pay securely."}
+        description={
+          service.short_description ?? "Complete the sankalpam details and pay securely."
+        }
       />
       <Section>
         <form onSubmit={onSubmit} className="surface-panel mx-auto max-w-2xl space-y-5 p-6">

@@ -12,9 +12,15 @@ import { createPaymentCheckout } from "@/lib/payments.functions";
 import { siteQuery } from "@/lib/queries";
 
 const CAUSES = [
-  { title: "Daily worship", body: "Flowers, fruits, oil lamps and materials for the daily pooja cycle." },
+  {
+    title: "Daily worship",
+    body: "Flowers, fruits, oil lamps and materials for the daily pooja cycle.",
+  },
   { title: "Festivals", body: "Utsavams, annadanam and cultural programs through the year." },
-  { title: "Temple upkeep", body: "Sanctum maintenance, utilities and expansion of community space." },
+  {
+    title: "Temple upkeep",
+    body: "Sanctum maintenance, utilities and expansion of community space.",
+  },
 ];
 
 const PRESETS = [51, 101, 251, 501, 1001];
@@ -29,7 +35,10 @@ export const Route = createFileRoute("/donate")({
           "Support daily worship, festivals and temple upkeep with a secure online contribution to our temple.",
       },
       { property: "og:title", content: "Donate & Support the Temple" },
-      { property: "og:description", content: "Support daily worship, festivals and temple upkeep." },
+      {
+        property: "og:description",
+        content: "Support daily worship, festivals and temple upkeep.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

@@ -58,8 +58,12 @@ function Priests() {
           {active.map((p) => {
             const windows = data.windows
               .filter((w) => w.priest_id === p.id)
-              .sort((a, b) => a.day_of_week - b.day_of_week || a.start_time.localeCompare(b.start_time));
-            const serviceIds = data.links.filter((l) => l.priest_id === p.id).map((l) => l.service_id);
+              .sort(
+                (a, b) => a.day_of_week - b.day_of_week || a.start_time.localeCompare(b.start_time),
+              );
+            const serviceIds = data.links
+              .filter((l) => l.priest_id === p.id)
+              .map((l) => l.service_id);
             const services = data.services.filter((s) => serviceIds.includes(s.id));
             return (
               <article key={p.id} className="surface-panel p-5">
@@ -76,7 +80,9 @@ function Priests() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-3 text-sm text-muted-foreground">By appointment — contact the office.</p>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    By appointment — contact the office.
+                  </p>
                 )}
                 {services.length ? (
                   <div className="mt-4 flex flex-wrap gap-1.5">

@@ -94,7 +94,9 @@ function About() {
             {data.deities.map((d) => (
               <article key={d.id} className="surface-panel p-5">
                 <h3 className="text-lg">{d.name}</h3>
-                {d.description ? <p className="mt-3 text-sm text-muted-foreground">{d.description}</p> : null}
+                {d.description ? (
+                  <p className="mt-3 text-sm text-muted-foreground">{d.description}</p>
+                ) : null}
               </article>
             ))}
           </div>

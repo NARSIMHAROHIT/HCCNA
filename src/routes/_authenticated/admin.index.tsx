@@ -26,7 +26,10 @@ function AdminOverview() {
     { label: "Received (all time)", value: money(total) },
     { label: "Received this month", value: money(monthTotal) },
     { label: "Paid transactions", value: String(paid.length) },
-    { label: "Active poojas listed", value: String(data.services.filter((s) => s.is_active).length) },
+    {
+      label: "Active poojas listed",
+      value: String(data.services.filter((s) => s.is_active).length),
+    },
     { label: "Upcoming events", value: String(data.events.length) },
     { label: "Board members", value: String(data.board.length) },
   ];
@@ -50,7 +53,8 @@ function AdminOverview() {
               <div className="min-w-0">
                 <p className="truncate font-semibold">{p.item_name}</p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {p.devotee_name} · {p.receipt_number} · {new Date(p.created_at).toLocaleDateString()}
+                  {p.devotee_name} · {p.receipt_number} ·{" "}
+                  {new Date(p.created_at).toLocaleDateString()}
                 </p>
               </div>
               <span className={p.status === "paid" ? "text-primary" : "text-muted-foreground"}>

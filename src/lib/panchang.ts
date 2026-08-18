@@ -198,11 +198,11 @@ export function moonLongitude(jd: number): number {
     0.05332 * Math.sin(2 * D + MP) +
     0.045758 * Math.sin(2 * D - M) -
     0.040923 * Math.sin(M - MP) -
-    0.034720 * Math.sin(D) -
+    0.03472 * Math.sin(D) -
     0.030383 * Math.sin(M + MP) +
     0.015327 * Math.sin(2 * D - 2 * F) -
     0.012528 * Math.sin(MP + 2 * F) +
-    0.010980 * Math.sin(MP - 2 * F) +
+    0.01098 * Math.sin(MP - 2 * F) +
     0.010675 * Math.sin(4 * D - MP) +
     0.010034 * Math.sin(3 * MP) +
     0.008548 * Math.sin(4 * D - 2 * MP) -
@@ -235,7 +235,11 @@ export interface SunTimes {
 }
 
 /** NOAA sunrise/sunset for the civil date `ymd` at the given coordinates. */
-export function sunTimes(ymd: { y: number; m: number; d: number }, lat: number, lon: number): SunTimes {
+export function sunTimes(
+  ymd: { y: number; m: number; d: number },
+  lat: number,
+  lon: number,
+): SunTimes {
   const jdMidnight = Date.UTC(ymd.y, ymd.m - 1, ymd.d) / 86400000 + 2440587.5;
   const t = centuries(jdMidnight);
 
@@ -249,11 +253,9 @@ export function sunTimes(ymd: { y: number; m: number; d: number }, lat: number, 
     Math.sin(3 * anomR) * 0.000289;
   const trueLong = geomMeanLong + eqOfCtr;
   const appLong = trueLong - 0.00569 - 0.00478 * Math.sin((125.04 - 1934.136 * t) * RAD);
-  const meanObliq =
-    23 + (26 + (21.448 - t * (46.815 + t * (0.00059 - t * 0.001813))) / 60) / 60;
+  const meanObliq = 23 + (26 + (21.448 - t * (46.815 + t * (0.00059 - t * 0.001813))) / 60) / 60;
   const obliq = meanObliq + 0.00256 * Math.cos((125.04 - 1934.136 * t) * RAD);
-  const declin =
-    Math.asin(Math.sin(obliq * RAD) * Math.sin(appLong * RAD)) * DEG;
+  const declin = Math.asin(Math.sin(obliq * RAD) * Math.sin(appLong * RAD)) * DEG;
 
   const varY = Math.tan((obliq / 2) * RAD) ** 2;
   const eqTime =
@@ -379,7 +381,7 @@ export function computePanchang(
     karanaSeq === 0
       ? "Kimstughna"
       : karanaSeq >= 57
-        ? ["Shakuni", "Chatushpada", "Naga"][karanaSeq - 57] ?? "Naga"
+        ? (["Shakuni", "Chatushpada", "Naga"][karanaSeq - 57] ?? "Naga")
         : KARANA_NAMES[(karanaSeq - 1) % 7]!;
 
   // Lunar month (amanta): named after the solar sign the sun occupies at the
@@ -420,12 +422,7 @@ export function computePanchang(
 }
 
 /** Panchang for every day of a civil month at a location. */
-export function computeMonth(
-  year: number,
-  month: number,
-  lat: number,
-  lon: number,
-): Panchang[] {
+export function computeMonth(year: number, month: number, lat: number, lon: number): Panchang[] {
   const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
   const out: Panchang[] = [];
   for (let d = 1; d <= days; d++) {
@@ -435,7 +432,10 @@ export function computeMonth(
 }
 
 /** Civil y/m/d of "today" in a given IANA timezone. */
-export function todayInTimezone(timezone: string, now = new Date()): { y: number; m: number; d: number } {
+export function todayInTimezone(
+  timezone: string,
+  now = new Date(),
+): { y: number; m: number; d: number } {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone,
     year: "numeric",

@@ -75,7 +75,9 @@ function ServiceDetail() {
             {service.preparation_instructions ? (
               <div className="surface-panel p-5">
                 <h2 className="text-xl">How to prepare</h2>
-                <p className="mt-2 text-sm text-muted-foreground">{service.preparation_instructions}</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {service.preparation_instructions}
+                </p>
               </div>
             ) : null}
             {service.required_materials ? (
@@ -100,7 +102,9 @@ function ServiceDetail() {
 
           <aside className="surface-panel h-fit p-6">
             <p className="font-display text-3xl text-primary">
-              {service.price_cents > 0 ? formatMoney(service.price_cents, temple.currency) : "By donation"}
+              {service.price_cents > 0
+                ? formatMoney(service.price_cents, temple.currency)
+                : "By donation"}
             </p>
             <dl className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between gap-4">
@@ -127,8 +131,8 @@ function ServiceDetail() {
               </Link>
             </Button>
             <p className="mt-3 text-xs text-muted-foreground">
-              Card payments are processed securely by Stripe and a receipt is issued instantly. Times
-              shown in {temple.timezone}.
+              Card payments are processed securely by Stripe and a receipt is issued instantly.
+              Times shown in {temple.timezone}.
             </p>
           </aside>
         </div>

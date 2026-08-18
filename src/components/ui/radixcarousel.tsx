@@ -1,32 +1,35 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
-
+type ImageModule = {
+  default: string;
+};
 const images = Object.values(
-  import.meta.glob("../../assets/*.{jpg,png}", { eager: true })
-).map((mod: any) => mod.default);
-
+  import.meta.glob<ImageModule>("../../assets/*.{jpg,png}", { eager: true }),
+).map((mod) => mod.default);
 
 export default function RadixCarousel() {
-  
   const [activeIndex, setActiveIndex] = useState(0);
-  
-  useEffect(() => {
-      const interval = setInterval(() => {
-        setActiveIndex((prev) => (prev + 1) % images.length);
-      }, 3000);
-      return () => clearInterval(interval);
-    }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <Tabs.Root value={String(activeIndex)} onValueChange={(val) => setActiveIndex(Number(val))} className="w-full">
+    <Tabs.Root
+      value={String(activeIndex)}
+      onValueChange={(val) => setActiveIndex(Number(val))}
+      className="w-full"
+    >
       {images.map((image, index) => (
         <Tabs.Content
           key={index}
           value={String(index)}
           className="relative isolate overflow-hidden h-[45vh] min-h-[300px] max-h-[620px]"
         >
-           <div
+          <div
             className="absolute inset-0 blur-2xl opacity-40"
             style={{
               backgroundImage: `url(${image})`,
@@ -34,11 +37,7 @@ export default function RadixCarousel() {
               backgroundPosition: "center",
             }}
           />
-          <img
-            src={image}
-            alt={`Slide ${index + 1}`}
-            className="h-full w-full object-contain"
-          />
+          <img src={image} alt={`Slide ${index + 1}`} className="h-full w-full object-contain" />
         </Tabs.Content>
       ))}
       <Tabs.List className="flex justify-center space-x-2 mt-4">

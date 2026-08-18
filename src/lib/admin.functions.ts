@@ -66,7 +66,11 @@ export const getAdminData = createServerFn({ method: "GET" })
       eventPhotos,
     ] = await Promise.all([
       supabase.from("temple_schedules").select("*").eq("temple_id", temple.id).order("day_of_week"),
-      supabase.from("service_categories").select("*").eq("temple_id", temple.id).order("display_order"),
+      supabase
+        .from("service_categories")
+        .select("*")
+        .eq("temple_id", temple.id)
+        .order("display_order"),
       supabase.from("services").select("*").eq("temple_id", temple.id).order("display_order"),
       supabase.from("events").select("*").eq("temple_id", temple.id).order("starts_at"),
       supabase
@@ -161,7 +165,6 @@ export const deleteRecord = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-
 
 /** Audit trail of who changed events, priests, donors and deities. */
 export const getAuditLog = createServerFn({ method: "GET" })
@@ -306,7 +309,6 @@ export const revokeAdmin = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-
 
 /**
  * Bootstrap: the first signed-in devotee can claim administrator access while

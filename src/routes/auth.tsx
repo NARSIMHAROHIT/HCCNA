@@ -22,7 +22,10 @@ export const Route = createFileRoute("/auth")({
         content: "Sign in to book poojas, manage your bookings and register for temple events.",
       },
       { property: "og:title", content: "Sign In — HCCNA" },
-      { property: "og:description", content: "Sign in to book poojas and manage your temple bookings." },
+      {
+        property: "og:description",
+        content: "Sign in to book poojas and manage your temple bookings.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -102,7 +105,6 @@ function AuthPage() {
     }
   }
 
-
   async function onGoogle() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(next)}`,
@@ -129,7 +131,8 @@ function AuthPage() {
               Continue with Google
             </Button>
             <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
-              <span className="h-px flex-1 bg-border" /> or <span className="h-px flex-1 bg-border" />
+              <span className="h-px flex-1 bg-border" /> or{" "}
+              <span className="h-px flex-1 bg-border" />
             </div>
             <form className="space-y-4" onSubmit={onSubmit}>
               {mode === "signup" ? (
@@ -194,7 +197,9 @@ function AuthPage() {
               className="mt-4 w-full text-sm text-muted-foreground hover:text-foreground"
               onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
             >
-              {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
+              {mode === "signin"
+                ? "New here? Create an account"
+                : "Already have an account? Sign in"}
             </button>
           </div>
         </div>

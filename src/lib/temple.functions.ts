@@ -1,7 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { computeMonth, computePanchang, formatPeriod, formatTime, todayInTimezone } from "./panchang";
+import {
+  computeMonth,
+  computePanchang,
+  formatPeriod,
+  formatTime,
+  todayInTimezone,
+} from "./panchang";
 
 /**
  * Public content API. Every read is scoped to the temple configured for this
@@ -39,7 +45,11 @@ export const getSiteData = createServerFn({ method: "GET" }).handler(async () =>
         .limit(20),
       supabase.from("services").select("*").eq("temple_id", temple.id).order("display_order"),
       supabase.from("priests").select("*").eq("temple_id", temple.id).order("display_order"),
-      supabase.from("service_categories").select("*").eq("temple_id", temple.id).order("display_order"),
+      supabase
+        .from("service_categories")
+        .select("*")
+        .eq("temple_id", temple.id)
+        .order("display_order"),
       supabase
         .from("events")
         .select("*")
@@ -97,7 +107,8 @@ export const getServiceBySlug = createServerFn({ method: "GET" })
       supabase.from("deities").select("*").eq("temple_id", temple.id).order("display_order"),
     ]);
 
-    const haystack = `${service.name} ${service.short_description ?? ""} ${service.description ?? ""}`.toLowerCase();
+    const haystack =
+      `${service.name} ${service.short_description ?? ""} ${service.description ?? ""}`.toLowerCase();
     const relatedDeities = (deities ?? []).filter(
       (d) => d.image_url && haystack.includes(d.name.toLowerCase()),
     );
@@ -131,11 +142,7 @@ export const getEventBySlug = createServerFn({ method: "GET" })
 
     const [items, photos] = await Promise.all([
       supabase.from("event_items").select("*").eq("event_id", event.id).order("display_order"),
-      supabase
-        .from("event_photos")
-        .select("*")
-        .eq("event_id", event.id)
-        .order("display_order"),
+      supabase.from("event_photos").select("*").eq("event_id", event.id).order("display_order"),
     ]);
 
     return { temple, event, items: items.data ?? [], photos: photos.data ?? [] };
@@ -186,7 +193,10 @@ export const getPriestDirectory = createServerFn({ method: "GET" }).handler(asyn
 export const getPanchang = createServerFn({ method: "GET" })
   .inputValidator((input: unknown) =>
     z
-      .object({ year: z.number().int().optional(), month: z.number().int().min(1).max(12).optional() })
+      .object({
+        year: z.number().int().optional(),
+        month: z.number().int().min(1).max(12).optional(),
+      })
       .parse(input ?? {}),
   )
   .handler(async ({ data }) => {

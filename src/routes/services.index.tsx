@@ -47,7 +47,9 @@ function ServicesIndex() {
                 <div key={cat.id}>
                   <h2 className="text-2xl">{cat.name}</h2>
                   {cat.description ? (
-                    <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{cat.description}</p>
+                    <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                      {cat.description}
+                    </p>
                   ) : null}
                   <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {inCat.map((s) => (

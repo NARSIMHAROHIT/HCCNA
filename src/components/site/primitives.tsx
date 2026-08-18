@@ -60,7 +60,13 @@ export function GoldRule({ className }: { className?: string }) {
   return <div className={cn("gold-rule h-px w-full", className)} aria-hidden />;
 }
 
-export function Prose({ html, className }: { html: string | null | undefined; className?: string }) {
+export function Prose({
+  html,
+  className,
+}: {
+  html: string | null | undefined;
+  className?: string;
+}) {
   if (!html) return null;
   return (
     <div

@@ -55,7 +55,9 @@ function Home() {
       {announcement ? (
         <div className="bg-primary px-4 py-2.5 text-center text-sm text-primary-foreground">
           <span className="font-semibold">{announcement.title}</span>
-          {announcement.body ? <span className="hidden sm:inline"> — {announcement.body}</span> : null}
+          {announcement.body ? (
+            <span className="hidden sm:inline"> — {announcement.body}</span>
+          ) : null}
         </div>
       ) : null}
 

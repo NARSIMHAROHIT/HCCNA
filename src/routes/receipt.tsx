@@ -51,14 +51,21 @@ function ReceiptPage() {
           ) : isLoading ? (
             <p className="text-muted-foreground">Loading your receipt…</p>
           ) : !data ? (
-            <p className="text-muted-foreground">We could not find a payment with that reference.</p>
+            <p className="text-muted-foreground">
+              We could not find a payment with that reference.
+            </p>
           ) : (
             <>
               <article className="surface-panel space-y-5 p-8 print:border-0 print:shadow-none">
                 <header className="border-b border-border/70 pb-4">
                   <h2 className="font-display text-2xl">{data.temple?.name}</h2>
                   <p className="text-sm text-muted-foreground">
-                    {[data.temple?.address_line1, data.temple?.city, data.temple?.state, data.temple?.postal_code]
+                    {[
+                      data.temple?.address_line1,
+                      data.temple?.city,
+                      data.temple?.state,
+                      data.temple?.postal_code,
+                    ]
                       .filter(Boolean)
                       .join(", ")}
                   </p>
@@ -73,7 +80,9 @@ function ReceiptPage() {
                   <Row label="Devotee" value={data.payment.devotee_name ?? "—"} />
                   <Row
                     label="Date"
-                    value={new Date(data.payment.paid_at ?? data.payment.created_at).toLocaleString()}
+                    value={new Date(
+                      data.payment.paid_at ?? data.payment.created_at,
+                    ).toLocaleString()}
                   />
                   <Row label="Status" value={data.payment.status === "paid" ? "Paid" : "Pending"} />
                   {data.payment.preferred_date ? (
@@ -89,8 +98,8 @@ function ReceiptPage() {
                 </div>
 
                 <p className="text-xs text-muted-foreground">
-                  Please retain this receipt for your records. Contributions may be tax deductible to the
-                  extent allowed by law.
+                  Please retain this receipt for your records. Contributions may be tax deductible
+                  to the extent allowed by law.
                 </p>
               </article>
 
