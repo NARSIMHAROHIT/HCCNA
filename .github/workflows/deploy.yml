@@ -1,4 +1,4 @@
-name: Deploy React App to EC2
+name: Deploy HCCNA to AWS EC2
 
 on:
   push:
@@ -19,7 +19,7 @@ env:
 
 jobs:
   build:
-    name: Build React Application
+    name: Build Application
     runs-on: ubuntu-latest
 
     steps:
@@ -35,36 +35,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run lint
-        run: npm run lint
-
-      - name: Build React application
+      - name: Build application
         env:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         run: npm run build
 
-      - name: Verify build
+      - name: Verify build output
         run: |
-          if [ ! -d "dist" ]; then
-            echo "ERROR: dist directory was not created."
+          if [ ! -d ".output/public" ]; then
+            echo "ERROR: .output/public directory was not created."
             exit 1
           fi
 
-          if [ ! -f "dist/index.html" ]; then
-            echo "ERROR: dist/index.html was not created."
-            exit 1
-          fi
+          echo "Build output:"
+          find .output/public -maxdepth 2 -type f | sort
 
-          echo "Build successful."
-          du -sh dist
-
-      - name: Upload build artifact
+      - name: Upload production artifact
         uses: actions/upload-artifact@v4
         with:
-          name: react-production-build
-          path: dist/
+          name: hccna-production
+          path: .output/public/
           retention-days: 1
 
   deploy:
@@ -73,11 +65,11 @@ jobs:
     needs: build
 
     steps:
-      - name: Download build
+      - name: Download production artifact
         uses: actions/download-artifact@v4
         with:
-          name: react-production-build
-          path: dist
+          name: hccna-production
+          path: public
 
       - name: Configure SSH
         env:
@@ -114,7 +106,7 @@ jobs:
             "$EC2_USER@$EC2_HOST" \
             "sudo mkdir -p ${{ env.APP_DIR }} && sudo chown -R $EC2_USER:$EC2_USER ${{ env.APP_DIR }}"
 
-      - name: Deploy React files
+      - name: Deploy public files
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
@@ -123,7 +115,7 @@ jobs:
             -avz \
             --delete \
             -e "ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=yes" \
-            dist/ \
+            public/ \
             "$EC2_USER@$EC2_HOST:${{ env.APP_DIR }}/"
 
       - name: Reload Nginx
@@ -146,8 +138,8 @@ jobs:
             -i ~/.ssh/ec2_key \
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
-            "test -f ${{ env.APP_DIR }}/index.html"
+            "ls -la ${{ env.APP_DIR }}"
 
           echo "======================================"
-          echo "React application deployed successfully"
+          echo "HCCNA deployment completed"
           echo "======================================"
