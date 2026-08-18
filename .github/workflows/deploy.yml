@@ -1,4 +1,4 @@
-name: Deploy HCCNA to GitHub Pages
+name: Deploy React App to EC2
 
 on:
   push:
@@ -8,15 +8,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: production
   cancel-in-progress: true
 
 jobs:
   build:
+    name: Build React Application
     runs-on: ubuntu-latest
 
     steps:
@@ -32,22 +31,58 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build application
+      - name: Build React application
         run: npm run build
 
-      - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Verify build
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "ERROR: dist directory was not created."
+            exit 1
+          fi
+
+          echo "Build completed successfully."
+          ls -la dist
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: .output/public
+          name: react-build
+          path: dist/
 
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    name: Deploy to EC2
     runs-on: ubuntu-latest
     needs: build
 
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: react-build
+          path: dist
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+
+          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy React application
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=yes" \
+            dist/ \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/hccna/
+
+      - name: Restart Nginx
+        run: |
+          ssh -i ~/.ssh/ec2_key \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
+            "sudo nginx -t && sudo systemctl reload nginx"
+
+      - name: Deployment complete
+        run: |
+          echo "React application successfully deployed to EC2."
