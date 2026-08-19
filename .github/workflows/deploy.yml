@@ -239,17 +239,12 @@ jobs:
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
             "pm2 env 0 | grep -q '^VITE_SUPABASE_URL:' && echo 'VITE_SUPABASE_URL: PRESENT'"
-
       - name: Configure Nginx
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          ssh \
-            -i ~/.ssh/ec2_key \
-            -o StrictHostKeyChecking=yes \
-            "$EC2_USER@$EC2_HOST" \
-            "sudo tee /etc/nginx/sites-available/hccna >/dev/null <<'NGINX'
+          cat > nginx-hccna.conf <<EOF
           server {
               listen 80;
               listen [::]:80;
@@ -266,16 +261,28 @@ jobs:
                   proxy_set_header X-Forwarded-Proto \$scheme;
 
                   proxy_set_header Upgrade \$http_upgrade;
-                  proxy_set_header Connection "upgrade";
+                  proxy_set_header Connection upgrade;
               }
           }
-          NGINX
+          EOF
 
-          sudo ln -sf /etc/nginx/sites-available/hccna /etc/nginx/sites-enabled/hccna
-          sudo rm -f /etc/nginx/sites-enabled/default
+          scp \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            nginx-hccna.conf \
+            "$EC2_USER@$EC2_HOST:/tmp/hccna-nginx.conf"
 
-          sudo nginx -t
-          sudo systemctl reload nginx
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "sudo mv /tmp/hccna-nginx.conf /etc/nginx/sites-available/hccna && \
+             sudo ln -sf /etc/nginx/sites-available/hccna /etc/nginx/sites-enabled/hccna && \
+             sudo rm -f /etc/nginx/sites-enabled/default && \
+             sudo nginx -t && \
+             sudo systemctl reload nginx"
+
+          rm -f nginx-hccna.conf
 
       - name: Verify PM2
         env:
