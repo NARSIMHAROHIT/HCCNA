@@ -34,7 +34,7 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 function createSupabaseAdminClient() {
   const SUPABASE_URL = import.meta.env["VITE_SUPABASE_URL"];
-  const SUPABASE_SERVICE_ROLE_KEY = import.meta.env["VITE_SUPABASE_SERVICE_ROLE_KEY"];
+  const SUPABASE_SERVICE_ROLE_KEY = import.meta.env["SUPABASE_SERVICE_ROLE_KEY"];
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [
