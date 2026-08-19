@@ -24,23 +24,29 @@ const NAV = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
+/**
+ * Plain sign-in link. Used as the server-rendered fallback as well, so the way
+ * into the devotee portal exists even before (or without) hydration.
+ */
+function SignInButton() {
+  return (
+    <Button asChild variant="outline" size="sm">
+      <Link to="/auth">
+        <UserRound className="size-4" aria-hidden />
+        Sign in
+      </Link>
+    </Button>
+  );
+}
+
 function AccountArea() {
   const { user, loading } = useSession();
   const navigate = useNavigate();
 
-  if (loading) {
-    return <div className="h-9 w-24" aria-hidden />;
-  }
-
-  if (!user) {
-    return (
-      <Button asChild variant="outline" size="sm">
-        <Link to="/auth">
-          <UserRound className="size-4" aria-hidden />
-          Sign in
-        </Link>
-      </Button>
-    );
+  // While the session is being read, still show the sign-in link rather than a
+  // blank space — a signed-in devotee sees it swap to "My account" a moment later.
+  if (loading || !user) {
+    return <SignInButton />;
   }
 
   return (
@@ -135,7 +141,7 @@ export function Header() {
             <Link to="/donate">Donate</Link>
           </Button>
 
-          <ClientOnly fallback={<div className="h-9 w-24" aria-hidden />}>
+          <ClientOnly fallback={<SignInButton />}>
             <AccountArea />
           </ClientOnly>
 

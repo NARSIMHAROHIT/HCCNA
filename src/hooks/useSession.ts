@@ -10,18 +10,38 @@ export function useSession() {
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      setSession(data.session);
+
+    // Creating the Supabase client throws when VITE_SUPABASE_* is missing from
+    // the build, and getSession() can reject if auth storage is unavailable.
+    // Either way we must stop loading, otherwise the header renders an empty
+    // placeholder forever and the devotee has no way to reach the sign-in page.
+    let unsubscribe = () => {};
+    try {
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          if (!active) return;
+          setSession(data.session);
+          setLoading(false);
+        })
+        .catch((error: unknown) => {
+          console.error("[auth] Could not read the session", error);
+          if (active) setLoading(false);
+        });
+
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+        setSession(next);
+        setLoading(false);
+      });
+      unsubscribe = () => sub.subscription.unsubscribe();
+    } catch (error) {
+      console.error("[auth] Supabase auth is unavailable", error);
       setLoading(false);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next);
-      setLoading(false);
-    });
+    }
+
     return () => {
       active = false;
-      sub.subscription.unsubscribe();
+      unsubscribe();
     };
   }, []);
 

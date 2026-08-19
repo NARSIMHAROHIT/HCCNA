@@ -18,6 +18,7 @@ env:
   APP_DIR: /var/www/hccna
   APP_NAME: hccna
   APP_PORT: 3000
+  APP_DOMAIN: hccna.online
 
 jobs:
   build:
@@ -37,12 +38,47 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # VITE_* values are baked into the browser bundle at build time. If any is
+      # empty the build still succeeds, but the client Supabase client throws on
+      # load and the header renders no Sign in button. Fail here instead.
+      - name: Verify client build variables
+        env:
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        run: |
+          missing=0
+          for name in VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY VITE_SUPABASE_PROJECT_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is empty. Set it under Settings -> Secrets and variables -> Actions."
+              missing=1
+            else
+              echo "$name: OK"
+            fi
+          done
+          test "$missing" -eq 0
+
       - name: Build application
         env:
           VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         run: npm run build
+
+      # Prove the Supabase URL actually reached the browser bundle. If this fails,
+      # the values were present but Vite did not inline them.
+      - name: Verify Supabase reached the client bundle
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        run: |
+          host=$(echo "$VITE_SUPABASE_URL" | sed -E 's#^https?://##; s#/.*##')
+          echo "Looking for '$host' in .output/public ..."
+          if grep -rq -- "$host" .output/public; then
+            echo "Supabase URL is present in the client bundle."
+          else
+            echo "::error::The Supabase URL is missing from the client bundle - sign-in will not work."
+            exit 1
+          fi
 
       - name: Verify Nitro build
         run: |
@@ -191,6 +227,19 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
 
+          # Square (server-side only). If these are absent the app falls back to
+          # Stripe automatically, so the deploy still succeeds without them.
+          SQUARE_ACCESS_TOKEN: ${{ secrets.SQUARE_ACCESS_TOKEN }}
+          SQUARE_LOCATION_ID: ${{ secrets.SQUARE_LOCATION_ID }}
+          SQUARE_ENVIRONMENT: ${{ secrets.SQUARE_ENVIRONMENT }}
+          SQUARE_WEBHOOK_SIGNATURE_KEY: ${{ secrets.SQUARE_WEBHOOK_SIGNATURE_KEY }}
+          SQUARE_WEBHOOK_URL: ${{ secrets.SQUARE_WEBHOOK_URL }}
+          PAYMENT_PROVIDER: ${{ secrets.PAYMENT_PROVIDER }}
+
+          # Stripe (kept as the fallback processor)
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+
         run: |
           echo "Starting HCCNA on EC2..."
 
@@ -205,17 +254,103 @@ jobs:
             export VITE_SUPABASE_PROJECT_ID='$VITE_SUPABASE_PROJECT_ID' && \
             export VITE_SUPABASE_PUBLISHABLE_KEY='$VITE_SUPABASE_PUBLISHABLE_KEY' && \
             export VITE_SUPABASE_URL='$VITE_SUPABASE_URL' && \
+            export SQUARE_ACCESS_TOKEN='$SQUARE_ACCESS_TOKEN' && \
+            export SQUARE_LOCATION_ID='$SQUARE_LOCATION_ID' && \
+            export SQUARE_ENVIRONMENT='$SQUARE_ENVIRONMENT' && \
+            export SQUARE_WEBHOOK_SIGNATURE_KEY='$SQUARE_WEBHOOK_SIGNATURE_KEY' && \
+            export SQUARE_WEBHOOK_URL='$SQUARE_WEBHOOK_URL' && \
+            export PAYMENT_PROVIDER='$PAYMENT_PROVIDER' && \
+            export STRIPE_SECRET_KEY='$STRIPE_SECRET_KEY' && \
+            export STRIPE_WEBHOOK_SECRET='$STRIPE_WEBHOOK_SECRET' && \
             export PORT='${{ env.APP_PORT }}' && \
             export HOST='127.0.0.1' && \
             echo 'Checking required runtime variables...' && \
             test -n \"\$SUPABASE_URL\" && echo 'SUPABASE_URL: OK' && \
             test -n \"\$SUPABASE_SERVICE_ROLE_KEY\" && echo 'SUPABASE_SERVICE_ROLE_KEY: OK' && \
             test -n \"\$VITE_SUPABASE_URL\" && echo 'VITE_SUPABASE_URL: OK' && \
+            if [ -n \"\$SQUARE_ACCESS_TOKEN\" ] && [ -n \"\$SQUARE_LOCATION_ID\" ]; then echo 'Payments: Square'; else echo 'Payments: Stripe fallback (Square secrets not set)'; fi && \
             pm2 start .output/server/index.mjs \
               --name '${{ env.APP_NAME }}' \
               --cwd '${{ env.APP_DIR }}' \
               --update-env && \
             pm2 save"
+
+      - name: Verify PM2 environment
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "pm2 env 0 | grep -q '^SUPABASE_SERVICE_ROLE_KEY:' && echo 'SUPABASE_SERVICE_ROLE_KEY: PRESENT'"
+
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "pm2 env 0 | grep -q '^SUPABASE_URL:' && echo 'SUPABASE_URL: PRESENT'"
+
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "pm2 env 0 | grep -q '^VITE_SUPABASE_URL:' && echo 'VITE_SUPABASE_URL: PRESENT'"
+      # Nginx is configured ONCE. After certbot runs it owns this file (443 block,
+      # certificate paths, HTTP->HTTPS redirect), so overwriting it on every deploy
+      # would silently tear TLS down again. Delete the file on the server if you
+      # ever want this step to regenerate a fresh HTTP-only config.
+      - name: Configure Nginx
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+        run: |
+          cat > nginx-hccna.conf <<EOF
+          server {
+              listen 80 default_server;
+              listen [::]:80 default_server;
+
+              server_name ${{ env.APP_DOMAIN }} www.${{ env.APP_DOMAIN }};
+
+              location / {
+                  proxy_pass http://127.0.0.1:${{ env.APP_PORT }};
+                  proxy_http_version 1.1;
+
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+
+                  proxy_set_header Upgrade \$http_upgrade;
+                  proxy_set_header Connection upgrade;
+              }
+          }
+          EOF
+
+          scp \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            nginx-hccna.conf \
+            "$EC2_USER@$EC2_HOST:/tmp/hccna-nginx.conf"
+
+          ssh \
+            -i ~/.ssh/ec2_key \
+            -o StrictHostKeyChecking=yes \
+            "$EC2_USER@$EC2_HOST" \
+            "if sudo test -f /etc/nginx/sites-available/hccna; then \
+               echo 'Nginx config already present - leaving it untouched so any TLS setup survives.'; \
+               rm -f /tmp/hccna-nginx.conf; \
+             else \
+               echo 'No nginx config found - installing the initial HTTP config.'; \
+               sudo mv /tmp/hccna-nginx.conf /etc/nginx/sites-available/hccna; \
+             fi && \
+             sudo ln -sf /etc/nginx/sites-available/hccna /etc/nginx/sites-enabled/hccna && \
+             sudo rm -f /etc/nginx/sites-enabled/default && \
+             sudo nginx -t && \
+             sudo systemctl reload nginx"
+
+          rm -f nginx-hccna.conf
 
       - name: Verify PM2 environment
         env:
@@ -329,11 +464,11 @@ jobs:
             -i ~/.ssh/ec2_key \
             -o StrictHostKeyChecking=yes \
             "$EC2_USER@$EC2_HOST" \
-            "curl -f -I --max-time 15 http://127.0.0.1"
+            "curl -sS -o /dev/null -w 'nginx responded %{http_code}\n' --max-time 15 http://127.0.0.1"
 
       - name: Deployment complete
         run: |
           echo "========================================="
           echo "HCCNA deployment completed successfully"
           echo "========================================="
-          echo "Application: http://${{ secrets.EC2_HOST }}"
+          echo "Application: https://${{ env.APP_DOMAIN }}"
