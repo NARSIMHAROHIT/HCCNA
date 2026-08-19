@@ -752,6 +752,225 @@ export type Database = {
           },
         ];
       };
+      hall_bookings: {
+        Row: {
+          admin_notes: string | null;
+          cleaning_fee_cents: number;
+          contact_email: string;
+          contact_name: string;
+          contact_phone: string;
+          created_at: string;
+          deposit_cents: number;
+          ends_at: string;
+          event_title: string | null;
+          event_type: string;
+          guest_count: number;
+          hall_id: string;
+          id: string;
+          needs_av: boolean;
+          needs_kitchen: boolean;
+          needs_tables: boolean;
+          notes: string | null;
+          organisation: string | null;
+          payment_id: string | null;
+          payment_status: Database["public"]["Enums"]["payment_status"];
+          rate_basis: string;
+          reference: string;
+          rental_cents: number;
+          setup_notes: string | null;
+          starts_at: string;
+          status: Database["public"]["Enums"]["hall_booking_status"];
+          temple_id: string;
+          total_cents: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          admin_notes?: string | null;
+          cleaning_fee_cents?: number;
+          contact_email: string;
+          contact_name: string;
+          contact_phone: string;
+          created_at?: string;
+          deposit_cents?: number;
+          ends_at: string;
+          event_title?: string | null;
+          event_type: string;
+          guest_count?: number;
+          hall_id: string;
+          id?: string;
+          needs_av?: boolean;
+          needs_kitchen?: boolean;
+          needs_tables?: boolean;
+          notes?: string | null;
+          organisation?: string | null;
+          payment_id?: string | null;
+          payment_status?: Database["public"]["Enums"]["payment_status"];
+          rate_basis?: string;
+          reference?: string;
+          rental_cents?: number;
+          setup_notes?: string | null;
+          starts_at: string;
+          status?: Database["public"]["Enums"]["hall_booking_status"];
+          temple_id: string;
+          total_cents?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          admin_notes?: string | null;
+          cleaning_fee_cents?: number;
+          contact_email?: string;
+          contact_name?: string;
+          contact_phone?: string;
+          created_at?: string;
+          deposit_cents?: number;
+          ends_at?: string;
+          event_title?: string | null;
+          event_type?: string;
+          guest_count?: number;
+          hall_id?: string;
+          id?: string;
+          needs_av?: boolean;
+          needs_kitchen?: boolean;
+          needs_tables?: boolean;
+          notes?: string | null;
+          organisation?: string | null;
+          payment_id?: string | null;
+          payment_status?: Database["public"]["Enums"]["payment_status"];
+          rate_basis?: string;
+          reference?: string;
+          rental_cents?: number;
+          setup_notes?: string | null;
+          starts_at?: string;
+          status?: Database["public"]["Enums"]["hall_booking_status"];
+          temple_id?: string;
+          total_cents?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "hall_bookings_hall_id_fkey";
+            columns: ["hall_id"];
+            isOneToOne: false;
+            referencedRelation: "halls";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hall_bookings_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "hall_bookings_temple_id_fkey";
+            columns: ["temple_id"];
+            isOneToOne: false;
+            referencedRelation: "temples";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      halls: {
+        Row: {
+          amenities: string[];
+          area_sqft: number | null;
+          buffer_minutes: number;
+          capacity: number;
+          cleaning_fee_cents: number;
+          closes_at: string;
+          created_at: string;
+          deposit_cents: number;
+          description: string | null;
+          display_order: number;
+          full_day_rate_cents: number;
+          half_day_rate_cents: number;
+          hourly_rate_cents: number;
+          id: string;
+          image_url: string | null;
+          is_active: boolean;
+          max_advance_days: number;
+          max_hours: number;
+          min_hours: number;
+          min_notice_days: number;
+          name: string;
+          opens_at: string;
+          rules: string | null;
+          short_description: string | null;
+          slug: string;
+          temple_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          amenities?: string[];
+          area_sqft?: number | null;
+          buffer_minutes?: number;
+          capacity?: number;
+          cleaning_fee_cents?: number;
+          closes_at?: string;
+          created_at?: string;
+          deposit_cents?: number;
+          description?: string | null;
+          display_order?: number;
+          full_day_rate_cents?: number;
+          half_day_rate_cents?: number;
+          hourly_rate_cents?: number;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          max_advance_days?: number;
+          max_hours?: number;
+          min_hours?: number;
+          min_notice_days?: number;
+          name: string;
+          opens_at?: string;
+          rules?: string | null;
+          short_description?: string | null;
+          slug: string;
+          temple_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          amenities?: string[];
+          area_sqft?: number | null;
+          buffer_minutes?: number;
+          capacity?: number;
+          cleaning_fee_cents?: number;
+          closes_at?: string;
+          created_at?: string;
+          deposit_cents?: number;
+          description?: string | null;
+          display_order?: number;
+          full_day_rate_cents?: number;
+          half_day_rate_cents?: number;
+          hourly_rate_cents?: number;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          max_advance_days?: number;
+          max_hours?: number;
+          min_hours?: number;
+          min_notice_days?: number;
+          name?: string;
+          opens_at?: string;
+          rules?: string | null;
+          short_description?: string | null;
+          slug?: string;
+          temple_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "halls_temple_id_fkey";
+            columns: ["temple_id"];
+            isOneToOne: false;
+            referencedRelation: "temples";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       media: {
         Row: {
           alt_text: string | null;
@@ -953,6 +1172,9 @@ export type Database = {
           provider: string;
           receipt_number: string;
           service_id: string | null;
+          square_order_id: string | null;
+          square_payment_id: string | null;
+          square_payment_link_id: string | null;
           status: Database["public"]["Enums"]["payment_status"];
           stripe_payment_intent: string | null;
           stripe_session_id: string | null;
@@ -978,6 +1200,9 @@ export type Database = {
           provider?: string;
           receipt_number?: string;
           service_id?: string | null;
+          square_order_id?: string | null;
+          square_payment_id?: string | null;
+          square_payment_link_id?: string | null;
           status?: Database["public"]["Enums"]["payment_status"];
           stripe_payment_intent?: string | null;
           stripe_session_id?: string | null;
@@ -1003,6 +1228,9 @@ export type Database = {
           provider?: string;
           receipt_number?: string;
           service_id?: string | null;
+          square_order_id?: string | null;
+          square_payment_id?: string | null;
+          square_payment_link_id?: string | null;
           status?: Database["public"]["Enums"]["payment_status"];
           stripe_payment_intent?: string | null;
           stripe_session_id?: string | null;
@@ -1590,6 +1818,14 @@ export type Database = {
         };
         Returns: boolean;
       };
+      hall_busy_ranges: {
+        Args: { _from: string; _hall_id: string; _to: string };
+        Returns: {
+          ends_at: string;
+          starts_at: string;
+          status: string;
+        }[];
+      };
       manages_temple: {
         Args: { _temple_id: string; _user_id: string };
         Returns: boolean;
@@ -1599,6 +1835,7 @@ export type Database = {
       app_role: "super_admin" | "temple_admin" | "priest" | "devotee";
       booking_status:
         "pending" | "confirmed" | "assigned" | "completed" | "cancelled" | "rescheduled";
+      hall_booking_status: "requested" | "held" | "confirmed" | "cancelled" | "completed";
       payment_status: "unpaid" | "pending" | "paid" | "refunded" | "waived";
       service_location: "temple" | "home" | "either";
     };
@@ -1724,6 +1961,7 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "temple_admin", "priest", "devotee"],
       booking_status: ["pending", "confirmed", "assigned", "completed", "cancelled", "rescheduled"],
+      hall_booking_status: ["requested", "held", "confirmed", "cancelled", "completed"],
       payment_status: ["unpaid", "pending", "paid", "refunded", "waived"],
       service_location: ["temple", "home", "either"],
     },

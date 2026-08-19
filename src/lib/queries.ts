@@ -9,6 +9,7 @@ import {
   getSiteData,
 } from "./temple.functions";
 import { getServiceAvailability } from "./booking.functions";
+import { getHalls } from "./hall.functions";
 import { getAdminData, getAdminPeople, getAuditLog } from "./admin.functions";
 
 export const siteQuery = queryOptions({
@@ -62,6 +63,12 @@ export const availabilityQuery = (serviceSlug: string, date: string) =>
     queryFn: () => getServiceAvailability({ data: { serviceSlug, date } }),
     staleTime: 15_000,
   });
+
+export const hallsQuery = queryOptions({
+  queryKey: ["halls"],
+  queryFn: () => getHalls(),
+  staleTime: 60_000,
+});
 
 export const adminQuery = queryOptions({
   queryKey: ["admin"],

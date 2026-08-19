@@ -34,6 +34,7 @@ Sign in and open **Admin** in the header (or go to `/admin`). Tabs:
 | Timings          | Daily opening hours and special-date timings                                     |
 | Poojas & prices  | Pooja categories, each seva's price, duration, description, and deity photos     |
 | Events & notices | Events, timings, sponsors, pooja item lists, photo galleries, announcements      |
+| Hall rental      | Hall details, rates and rules, plus every hall booking request                   |
 | Board & donors   | Board members and the donor wall                                                 |
 | People & admins  | Administrators, newsletter subscribers, event volunteers                         |
 | Payments         | Online payments and receipts                                                     |
@@ -65,24 +66,62 @@ image; poojas that name that deity show the picture automatically.
 
 **Donor wall** — Board & donors → Donors. Set a tier (e.g. Platinum, Gold) and
 donors are grouped by tier on the public page. Tick _anonymous_ to hide a name.
+The tier box is free text, so to create a new band just type it — for example
+`$1,000 – $10,000` — on each donor who belongs in it, and a new heading appears.
+The public page shows 24 donors at a time with **Previous / Next** links at the
+bottom, so the wall stays readable however long the list grows.
+
+**Hall rental** — Hall rental → Halls. Each hall has an hourly, half-day and
+full-day rate; devotees are automatically charged whichever is cheapest for the
+hours they book, plus the cleaning fee. The refundable deposit is what they pay
+online to hold the date. `Minimum notice (days)` stops last-minute requests and
+`Buffer between bookings` leaves setup/clear-up time between two events.
+
+**Hall requests** — Hall rental → Hall booking requests. Each request holds the
+date immediately so nobody else can take it. Move it to _confirmed_ once the
+deposit clears, or _cancelled_ to release the date. **Mark paid** is for
+deposits taken by cash or cheque at the office.
 
 **Newsletter & volunteers** — devotees subscribe from the home page and can
 volunteer for a specific event from that event's page. Both lists live under
 People & admins.
 
-## 5. Images
+## 5. Online payments
+
+The site takes card payments through **Square**. Nothing in the admin console
+needs changing when Square is set up — the keys live in the project's
+environment settings:
+
+| Variable                       | Where it comes from                                   |
+| ------------------------------ | ----------------------------------------------------- |
+| `SQUARE_ACCESS_TOKEN`          | Square Developer dashboard → your application         |
+| `SQUARE_LOCATION_ID`           | Square dashboard → Locations                          |
+| `SQUARE_ENVIRONMENT`           | `production`, or `sandbox` while testing              |
+| `SQUARE_WEBHOOK_SIGNATURE_KEY` | Square webhook subscription                           |
+| `SQUARE_WEBHOOK_URL`           | `https://www.hccna.online/api/public/webhooks/square` |
+
+In Square, add a webhook subscription pointing at
+`https://www.hccna.online/api/public/webhooks/square` and subscribe to
+`payment.created`, `payment.updated` and `order.updated`. That is what marks a
+receipt as paid.
+
+Stripe is still wired up as a backup. If the Square keys are missing, payments
+fall back to Stripe automatically; setting `PAYMENT_PROVIDER=stripe` forces the
+old behaviour without any code change.
+
+## 6. Images
 
 Paste a public image URL into any _image URL_ field (for example a link from the
 temple's Google Drive set to "anyone with the link", or any image host). Use
 landscape images around 1600×900 for event and hero pictures.
 
-## 6. The audit log
+## 7. The audit log
 
 Every create, edit and delete of events, priests, donors and deities is recorded
 with the person's name, the date and time, and the exact before/after values of
 each field. Nothing in the log can be edited or removed.
 
-## 7. Reusing this site for another temple
+## 8. Reusing this site for another temple
 
 1. Duplicate the project.
 2. In **Admin → Temple details**, change the name, tagline, address, contact

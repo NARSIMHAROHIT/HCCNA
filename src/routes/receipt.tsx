@@ -7,7 +7,15 @@ import { Button } from "@/components/ui/button";
 import { getReceipt } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/receipt")({
-  validateSearch: z.object({ session_id: z.string().optional() }),
+  // Stripe returns `session_id`; Square appends orderId / transactionId / referenceId
+  // to the redirect URL. Either reference resolves to the same payment record.
+  validateSearch: z.object({
+    session_id: z.string().optional(),
+    ref: z.string().optional(),
+    orderId: z.string().optional(),
+    transactionId: z.string().optional(),
+    referenceId: z.string().optional(),
+  }),
   head: () => ({
     meta: [
       { title: "Payment Receipt — HCCNA" },
@@ -30,11 +38,17 @@ function money(cents: number, currency: string) {
 }
 
 function ReceiptPage() {
-  const { session_id: sessionId } = Route.useSearch();
+  const { session_id: sessionId, orderId, ref } = Route.useSearch();
+  const reference = sessionId ?? ref ?? orderId;
   const { data, isLoading } = useQuery({
-    queryKey: ["receipt", sessionId],
-    queryFn: () => getReceipt({ data: { sessionId: sessionId! } }),
-    enabled: Boolean(sessionId),
+    queryKey: ["receipt", reference],
+    queryFn: () =>
+      getReceipt({
+        data: ref ? { ref } : orderId ? { orderId } : { sessionId: sessionId! },
+      }),
+    enabled: Boolean(reference),
+    // The webhook may land a moment after the devotee does.
+    refetchInterval: (query) => (query.state.data?.payment.status === "paid" ? false : 3000),
   });
 
   return (
@@ -46,7 +60,7 @@ function ReceiptPage() {
       />
       <Section>
         <div className="mx-auto max-w-2xl">
-          {!sessionId ? (
+          {!reference ? (
             <p className="text-muted-foreground">No payment reference was provided.</p>
           ) : isLoading ? (
             <p className="text-muted-foreground">Loading your receipt…</p>

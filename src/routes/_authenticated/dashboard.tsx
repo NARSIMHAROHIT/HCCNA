@@ -7,6 +7,8 @@ import { EmptyState, PageHeader, Section } from "@/components/site/primitives";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cancelMyBooking, getMyDashboard } from "@/lib/booking.functions";
+import { cancelMyHallBooking, getMyHallBookings } from "@/lib/hall.functions";
+import { formatMoney as formatHallMoney } from "@/lib/hall-pricing";
 import { formatInTimezone, formatMoney } from "@/lib/timezone";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -25,6 +27,22 @@ function Dashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: () => fetchDashboard(),
+  });
+
+  const fetchHallBookings = useServerFn(getMyHallBookings);
+  const cancelHall = useServerFn(cancelMyHallBooking);
+  const { data: hallBookings } = useQuery({
+    queryKey: ["dashboard", "hall-bookings"],
+    queryFn: () => fetchHallBookings(),
+  });
+
+  const cancelHallMutation = useMutation({
+    mutationFn: (id: string) => cancelHall({ data: { id } }),
+    onSuccess: () => {
+      toast.success("Hall booking cancelled");
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Could not cancel"),
   });
 
   const cancelMutation = useMutation({
@@ -55,6 +73,9 @@ function Dashboard() {
         <div className="mb-8 flex flex-wrap gap-3">
           <Button asChild>
             <Link to="/services">Book a pooja</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/halls">Book the hall</Link>
           </Button>
           <Button asChild variant="outline">
             <Link to="/profile">Edit profile</Link>
@@ -119,6 +140,57 @@ function Dashboard() {
                   </div>
                   <Badge variant="secondary">{b.status}</Badge>
                 </div>
+              ))}
+            </div>
+          </>
+        ) : null}
+
+        {hallBookings?.length ? (
+          <>
+            <h2 className="mb-4 mt-12 text-2xl">Hall bookings</h2>
+            <div className="space-y-4">
+              {hallBookings.map((b) => (
+                <article
+                  key={b.id}
+                  className="surface-panel flex flex-wrap items-center justify-between gap-4 p-5"
+                >
+                  <div className="min-w-0">
+                    <p className="font-display text-lg">{b.halls?.name ?? "Hall"}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {b.event_title ? `${b.event_title} — ` : ""}
+                      {b.event_type} · {b.guest_count} guests
+                    </p>
+                    <p className="mt-1 text-sm">
+                      {formatInTimezone(b.starts_at, "UTC", {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Ref {b.reference} · {formatHallMoney(b.total_cents, "USD")} ·{" "}
+                      {b.payment_status}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Badge variant={b.status === "confirmed" ? "default" : "secondary"}>
+                      {b.status}
+                    </Badge>
+                    {b.status !== "cancelled" && b.status !== "completed" ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={cancelHallMutation.isPending}
+                        onClick={() => cancelHallMutation.mutate(b.id)}
+                      >
+                        Cancel
+                      </Button>
+                    ) : null}
+                  </div>
+                </article>
               ))}
             </div>
           </>

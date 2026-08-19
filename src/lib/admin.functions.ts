@@ -21,6 +21,8 @@ const EDITABLE_TABLES = [
   "books",
   "event_items",
   "event_photos",
+  "halls",
+  "hall_bookings",
 ] as const;
 
 /** Tables that are scoped through a parent row rather than a temple_id column. */
@@ -64,6 +66,8 @@ export const getAdminData = createServerFn({ method: "GET" })
       bookings,
       eventItems,
       eventPhotos,
+      halls,
+      hallBookings,
     ] = await Promise.all([
       supabase.from("temple_schedules").select("*").eq("temple_id", temple.id).order("day_of_week"),
       supabase
@@ -96,6 +100,13 @@ export const getAdminData = createServerFn({ method: "GET" })
         .limit(100),
       supabase.from("event_items").select("*").order("display_order"),
       supabase.from("event_photos").select("*").eq("temple_id", temple.id).order("display_order"),
+      supabase.from("halls").select("*").eq("temple_id", temple.id).order("display_order"),
+      supabase
+        .from("hall_bookings")
+        .select("*, halls(name, slug)")
+        .eq("temple_id", temple.id)
+        .order("starts_at", { ascending: false })
+        .limit(200),
     ]);
 
     return {
@@ -114,6 +125,8 @@ export const getAdminData = createServerFn({ method: "GET" })
       bookings: bookings.data ?? [],
       eventItems: eventItems.data ?? [],
       eventPhotos: eventPhotos.data ?? [],
+      halls: halls.data ?? [],
+      hallBookings: hallBookings.data ?? [],
     };
   });
 

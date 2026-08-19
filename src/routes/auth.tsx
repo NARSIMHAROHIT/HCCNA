@@ -47,6 +47,7 @@ function AuthPage() {
   const [confirm, setConfirm] = useState("");
   const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const next = safeRedirect(search.redirect);
 
   async function onSubmit(e: React.FormEvent) {
@@ -105,16 +106,48 @@ function AuthPage() {
     }
   }
 
+  /**
+   * Google sign-in.
+   *
+   * Tries Lovable Cloud auth first, then falls back to Supabase's own Google
+   * provider. Either path can be unavailable depending on how the project is
+   * configured, and previously a rejected promise here left the button looking
+   * dead — every failure is now reported instead of swallowed.
+   */
   async function onGoogle() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(next)}`,
-    });
-    if (result.error) {
-      toast.error("Google sign-in failed. Please try again.");
-      return;
+    if (googleBusy) return;
+    setGoogleBusy(true);
+    const callback = `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(next)}`;
+
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: callback,
+      });
+      if (!result.error) {
+        if (result.redirected) return;
+        navigate({ to: next, replace: true });
+        return;
+      }
+      console.warn("[auth] Lovable Google sign-in unavailable", result.error);
+    } catch (error) {
+      console.warn("[auth] Lovable Google sign-in threw", error);
     }
-    if (result.redirected) return;
-    navigate({ to: next, replace: true });
+
+    // Fallback: Supabase Google provider (enable it under Authentication → Providers).
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: callback },
+      });
+      if (error) throw error;
+      // Supabase navigates the browser to Google; nothing more to do here.
+    } catch (error) {
+      console.error("[auth] Google sign-in failed", error);
+      toast.error(
+        "Google sign-in is not available yet. Please use your email and password, or ask the temple office to enable Google sign-in.",
+      );
+      setGoogleBusy(false);
+    }
   }
 
   return (
@@ -127,8 +160,14 @@ function AuthPage() {
       <Section>
         <div className="mx-auto max-w-md">
           <div className="surface-panel p-6">
-            <Button variant="outline" className="w-full" onClick={onGoogle}>
-              Continue with Google
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={onGoogle}
+              disabled={googleBusy}
+            >
+              {googleBusy ? "Opening Google…" : "Continue with Google"}
             </Button>
             <div className="my-5 flex items-center gap-3 text-xs uppercase tracking-wide text-muted-foreground">
               <span className="h-px flex-1 bg-border" /> or{" "}

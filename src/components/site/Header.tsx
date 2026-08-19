@@ -16,6 +16,7 @@ const NAV = [
   { to: "/services", label: "Poojas & Services" },
   { to: "/priests", label: "Priests" },
   { to: "/events", label: "Events" },
+  { to: "/halls", label: "Hall Rental" },
   { to: "/calendar", label: "Calendar" },
   { to: "/donors", label: "Donors" },
   { to: "/board", label: "Board" },

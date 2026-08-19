@@ -18,6 +18,7 @@ const TABS = [
   { to: "/admin/timings", label: "Timings" },
   { to: "/admin/poojas", label: "Poojas & prices" },
   { to: "/admin/events", label: "Events & notices" },
+  { to: "/admin/halls", label: "Hall rental" },
   { to: "/admin/community", label: "Board & donors" },
   { to: "/admin/people", label: "People & admins" },
   { to: "/admin/payments", label: "Payments" },

@@ -28,6 +28,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as EventsSlugRouteImport } from './routes/events.$slug'
+import { Route as HallsIndexRouteImport } from './routes/halls.index'
 import { Route as PaySlugRouteImport } from './routes/pay.$slug'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
@@ -35,12 +36,15 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authenticated/admin.audit'
 import { Route as AuthenticatedAdminCommunityRouteImport } from './routes/_authenticated/admin.community'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminHallsRouteImport } from './routes/_authenticated/admin.halls'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
 import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin.people'
 import { Route as AuthenticatedAdminPoojasRouteImport } from './routes/_authenticated/admin.poojas'
 import { Route as AuthenticatedAdminTempleRouteImport } from './routes/_authenticated/admin.temple'
 import { Route as AuthenticatedAdminTimingsRouteImport } from './routes/_authenticated/admin.timings'
 import { Route as AuthenticatedBookSlugRouteImport } from './routes/_authenticated/book.$slug'
+import { Route as AuthenticatedHallSlugRouteImport } from './routes/_authenticated/hall.$slug'
+import { Route as ApiPublicWebhooksSquareRouteImport } from './routes/api/public/webhooks/square'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
 const IndexRoute = IndexRouteImport.update({
@@ -137,6 +141,11 @@ const EventsSlugRoute = EventsSlugRouteImport.update({
   path: '/events/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HallsIndexRoute = HallsIndexRouteImport.update({
+  id: '/halls/',
+  path: '/halls/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaySlugRoute = PaySlugRouteImport.update({
   id: '/pay/$slug',
   path: '/pay/$slug',
@@ -174,6 +183,11 @@ const AuthenticatedAdminEventsRoute =
     path: '/events',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminHallsRoute = AuthenticatedAdminHallsRouteImport.update({
+  id: '/halls',
+  path: '/halls',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminPaymentsRoute =
   AuthenticatedAdminPaymentsRouteImport.update({
     id: '/payments',
@@ -209,6 +223,16 @@ const AuthenticatedBookSlugRoute = AuthenticatedBookSlugRouteImport.update({
   path: '/book/$slug',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedHallSlugRoute = AuthenticatedHallSlugRouteImport.update({
+  id: '/hall/$slug',
+  path: '/hall/$slug',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiPublicWebhooksSquareRoute = ApiPublicWebhooksSquareRouteImport.update({
+  id: '/api/public/webhooks/square',
+  path: '/api/public/webhooks/square',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
   id: '/api/public/webhooks/stripe',
   path: '/api/public/webhooks/stripe',
@@ -236,17 +260,21 @@ export interface FileRoutesByFullPath {
   '/pay/$slug': typeof PaySlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/halls/': typeof HallsIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/halls': typeof AuthenticatedAdminHallsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/poojas': typeof AuthenticatedAdminPoojasRoute
   '/admin/temple': typeof AuthenticatedAdminTempleRoute
   '/admin/timings': typeof AuthenticatedAdminTimingsRoute
   '/book/$slug': typeof AuthenticatedBookSlugRoute
+  '/hall/$slug': typeof AuthenticatedHallSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/webhooks/square': typeof ApiPublicWebhooksSquareRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
 }
 export interface FileRoutesByTo {
@@ -269,17 +297,21 @@ export interface FileRoutesByTo {
   '/pay/$slug': typeof PaySlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/events': typeof EventsIndexRoute
+  '/halls': typeof HallsIndexRoute
   '/services': typeof ServicesIndexRoute
   '/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/admin/halls': typeof AuthenticatedAdminHallsRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/poojas': typeof AuthenticatedAdminPoojasRoute
   '/admin/temple': typeof AuthenticatedAdminTempleRoute
   '/admin/timings': typeof AuthenticatedAdminTimingsRoute
   '/book/$slug': typeof AuthenticatedBookSlugRoute
+  '/hall/$slug': typeof AuthenticatedHallSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/webhooks/square': typeof ApiPublicWebhooksSquareRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
 }
 export interface FileRoutesById {
@@ -305,17 +337,21 @@ export interface FileRoutesById {
   '/pay/$slug': typeof PaySlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/events/': typeof EventsIndexRoute
+  '/halls/': typeof HallsIndexRoute
   '/services/': typeof ServicesIndexRoute
   '/_authenticated/admin/audit': typeof AuthenticatedAdminAuditRoute
   '/_authenticated/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
+  '/_authenticated/admin/halls': typeof AuthenticatedAdminHallsRoute
   '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/_authenticated/admin/poojas': typeof AuthenticatedAdminPoojasRoute
   '/_authenticated/admin/temple': typeof AuthenticatedAdminTempleRoute
   '/_authenticated/admin/timings': typeof AuthenticatedAdminTimingsRoute
   '/_authenticated/book/$slug': typeof AuthenticatedBookSlugRoute
+  '/_authenticated/hall/$slug': typeof AuthenticatedHallSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/webhooks/square': typeof ApiPublicWebhooksSquareRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
 }
 export interface FileRouteTypes {
@@ -341,17 +377,21 @@ export interface FileRouteTypes {
     | '/pay/$slug'
     | '/services/$slug'
     | '/events/'
+    | '/halls/'
     | '/services/'
     | '/admin/audit'
     | '/admin/community'
     | '/admin/events'
+    | '/admin/halls'
     | '/admin/payments'
     | '/admin/people'
     | '/admin/poojas'
     | '/admin/temple'
     | '/admin/timings'
     | '/book/$slug'
+    | '/hall/$slug'
     | '/admin/'
+    | '/api/public/webhooks/square'
     | '/api/public/webhooks/stripe'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -374,17 +414,21 @@ export interface FileRouteTypes {
     | '/pay/$slug'
     | '/services/$slug'
     | '/events'
+    | '/halls'
     | '/services'
     | '/admin/audit'
     | '/admin/community'
     | '/admin/events'
+    | '/admin/halls'
     | '/admin/payments'
     | '/admin/people'
     | '/admin/poojas'
     | '/admin/temple'
     | '/admin/timings'
     | '/book/$slug'
+    | '/hall/$slug'
     | '/admin'
+    | '/api/public/webhooks/square'
     | '/api/public/webhooks/stripe'
   id:
     | '__root__'
@@ -409,17 +453,21 @@ export interface FileRouteTypes {
     | '/pay/$slug'
     | '/services/$slug'
     | '/events/'
+    | '/halls/'
     | '/services/'
     | '/_authenticated/admin/audit'
     | '/_authenticated/admin/community'
     | '/_authenticated/admin/events'
+    | '/_authenticated/admin/halls'
     | '/_authenticated/admin/payments'
     | '/_authenticated/admin/people'
     | '/_authenticated/admin/poojas'
     | '/_authenticated/admin/temple'
     | '/_authenticated/admin/timings'
     | '/_authenticated/book/$slug'
+    | '/_authenticated/hall/$slug'
     | '/_authenticated/admin/'
+    | '/api/public/webhooks/square'
     | '/api/public/webhooks/stripe'
   fileRoutesById: FileRoutesById
 }
@@ -441,7 +489,9 @@ export interface RootRouteChildren {
   PaySlugRoute: typeof PaySlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
   EventsIndexRoute: typeof EventsIndexRoute
+  HallsIndexRoute: typeof HallsIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  ApiPublicWebhooksSquareRoute: typeof ApiPublicWebhooksSquareRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
 }
 
@@ -580,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/halls/': {
+      id: '/halls/'
+      path: '/halls'
+      fullPath: '/halls/'
+      preLoaderRoute: typeof HallsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pay/$slug': {
       id: '/pay/$slug'
       path: '/pay/$slug'
@@ -629,6 +686,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/halls': {
+      id: '/_authenticated/admin/halls'
+      path: '/halls'
+      fullPath: '/admin/halls'
+      preLoaderRoute: typeof AuthenticatedAdminHallsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/payments': {
       id: '/_authenticated/admin/payments'
       path: '/payments'
@@ -671,6 +735,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBookSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/hall/$slug': {
+      id: '/_authenticated/hall/$slug'
+      path: '/hall/$slug'
+      fullPath: '/hall/$slug'
+      preLoaderRoute: typeof AuthenticatedHallSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/webhooks/square': {
+      id: '/api/public/webhooks/square'
+      path: '/api/public/webhooks/square'
+      fullPath: '/api/public/webhooks/square'
+      preLoaderRoute: typeof ApiPublicWebhooksSquareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/stripe': {
       id: '/api/public/webhooks/stripe'
       path: '/api/public/webhooks/stripe'
@@ -685,6 +763,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAuditRoute: typeof AuthenticatedAdminAuditRoute
   AuthenticatedAdminCommunityRoute: typeof AuthenticatedAdminCommunityRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
+  AuthenticatedAdminHallsRoute: typeof AuthenticatedAdminHallsRoute
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedAdminPeopleRoute: typeof AuthenticatedAdminPeopleRoute
   AuthenticatedAdminPoojasRoute: typeof AuthenticatedAdminPoojasRoute
@@ -697,6 +776,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAuditRoute: AuthenticatedAdminAuditRoute,
   AuthenticatedAdminCommunityRoute: AuthenticatedAdminCommunityRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
+  AuthenticatedAdminHallsRoute: AuthenticatedAdminHallsRoute,
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedAdminPeopleRoute: AuthenticatedAdminPeopleRoute,
   AuthenticatedAdminPoojasRoute: AuthenticatedAdminPoojasRoute,
@@ -713,6 +793,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedBookSlugRoute: typeof AuthenticatedBookSlugRoute
+  AuthenticatedHallSlugRoute: typeof AuthenticatedHallSlugRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -720,6 +801,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedBookSlugRoute: AuthenticatedBookSlugRoute,
+  AuthenticatedHallSlugRoute: AuthenticatedHallSlugRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -753,7 +835,9 @@ const rootRouteChildren: RootRouteChildren = {
   PaySlugRoute: PaySlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,
   EventsIndexRoute: EventsIndexRoute,
+  HallsIndexRoute: HallsIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  ApiPublicWebhooksSquareRoute: ApiPublicWebhooksSquareRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
 }
 export const routeTree = rootRouteImport
