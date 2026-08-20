@@ -1680,6 +1680,7 @@ export type Database = {
           latitude: number;
           logo_url: string | null;
           longitude: number;
+          map_address: string | null;
           mission_html: string | null;
           name: string;
           phone: string | null;
@@ -1718,6 +1719,7 @@ export type Database = {
           latitude?: number;
           logo_url?: string | null;
           longitude?: number;
+          map_address?: string | null;
           mission_html?: string | null;
           name: string;
           phone?: string | null;
@@ -1756,6 +1758,7 @@ export type Database = {
           latitude?: number;
           logo_url?: string | null;
           longitude?: number;
+          map_address?: string | null;
           mission_html?: string | null;
           name?: string;
           phone?: string | null;
@@ -1816,6 +1819,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"];
           _user_id: string;
         };
+        Returns: boolean;
+      };
+      can_manage_media: {
+        Args: { _user_id: string };
         Returns: boolean;
       };
       hall_busy_ranges: {

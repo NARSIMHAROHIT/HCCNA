@@ -21,6 +21,8 @@ import { Route as DonorsRouteImport } from './routes/donors'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as PriestsRouteImport } from './routes/priests'
 import { Route as ReceiptRouteImport } from './routes/receipt'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as TimingsRouteImport } from './routes/timings'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -37,6 +39,7 @@ import { Route as AuthenticatedAdminAuditRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminCommunityRouteImport } from './routes/_authenticated/admin.community'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminHallsRouteImport } from './routes/_authenticated/admin.halls'
+import { Route as AuthenticatedAdminLibraryRouteImport } from './routes/_authenticated/admin.library'
 import { Route as AuthenticatedAdminPaymentsRouteImport } from './routes/_authenticated/admin.payments'
 import { Route as AuthenticatedAdminPeopleRouteImport } from './routes/_authenticated/admin.people'
 import { Route as AuthenticatedAdminPoojasRouteImport } from './routes/_authenticated/admin.poojas'
@@ -109,6 +112,16 @@ const ReceiptRoute = ReceiptRouteImport.update({
 const TimingsRoute = TimingsRouteImport.update({
   id: '/timings',
   path: '/timings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -188,6 +201,12 @@ const AuthenticatedAdminHallsRoute = AuthenticatedAdminHallsRouteImport.update({
   path: '/halls',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminLibraryRoute =
+  AuthenticatedAdminLibraryRouteImport.update({
+    id: '/library',
+    path: '/library',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPaymentsRoute =
   AuthenticatedAdminPaymentsRouteImport.update({
     id: '/payments',
@@ -252,6 +271,8 @@ export interface FileRoutesByFullPath {
   '/priests': typeof PriestsRoute
   '/receipt': typeof ReceiptRoute
   '/timings': typeof TimingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/welcome': typeof WelcomeRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -266,6 +287,7 @@ export interface FileRoutesByFullPath {
   '/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/halls': typeof AuthenticatedAdminHallsRoute
+  '/admin/library': typeof AuthenticatedAdminLibraryRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/poojas': typeof AuthenticatedAdminPoojasRoute
@@ -290,6 +312,8 @@ export interface FileRoutesByTo {
   '/priests': typeof PriestsRoute
   '/receipt': typeof ReceiptRoute
   '/timings': typeof TimingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/welcome': typeof WelcomeRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/auth/callback': typeof AuthCallbackRoute
@@ -303,6 +327,7 @@ export interface FileRoutesByTo {
   '/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/halls': typeof AuthenticatedAdminHallsRoute
+  '/admin/library': typeof AuthenticatedAdminLibraryRoute
   '/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/admin/poojas': typeof AuthenticatedAdminPoojasRoute
@@ -329,6 +354,8 @@ export interface FileRoutesById {
   '/priests': typeof PriestsRoute
   '/receipt': typeof ReceiptRoute
   '/timings': typeof TimingsRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/welcome': typeof WelcomeRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -343,6 +370,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/community': typeof AuthenticatedAdminCommunityRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/halls': typeof AuthenticatedAdminHallsRoute
+  '/_authenticated/admin/library': typeof AuthenticatedAdminLibraryRoute
   '/_authenticated/admin/payments': typeof AuthenticatedAdminPaymentsRoute
   '/_authenticated/admin/people': typeof AuthenticatedAdminPeopleRoute
   '/_authenticated/admin/poojas': typeof AuthenticatedAdminPoojasRoute
@@ -369,6 +397,8 @@ export interface FileRouteTypes {
     | '/priests'
     | '/receipt'
     | '/timings'
+    | '/reset-password'
+    | '/welcome'
     | '/admin'
     | '/dashboard'
     | '/profile'
@@ -383,6 +413,7 @@ export interface FileRouteTypes {
     | '/admin/community'
     | '/admin/events'
     | '/admin/halls'
+    | '/admin/library'
     | '/admin/payments'
     | '/admin/people'
     | '/admin/poojas'
@@ -407,6 +438,8 @@ export interface FileRouteTypes {
     | '/priests'
     | '/receipt'
     | '/timings'
+    | '/reset-password'
+    | '/welcome'
     | '/dashboard'
     | '/profile'
     | '/auth/callback'
@@ -420,6 +453,7 @@ export interface FileRouteTypes {
     | '/admin/community'
     | '/admin/events'
     | '/admin/halls'
+    | '/admin/library'
     | '/admin/payments'
     | '/admin/people'
     | '/admin/poojas'
@@ -445,6 +479,8 @@ export interface FileRouteTypes {
     | '/priests'
     | '/receipt'
     | '/timings'
+    | '/reset-password'
+    | '/welcome'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
@@ -459,6 +495,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/community'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/halls'
+    | '/_authenticated/admin/library'
     | '/_authenticated/admin/payments'
     | '/_authenticated/admin/people'
     | '/_authenticated/admin/poojas'
@@ -485,6 +522,8 @@ export interface RootRouteChildren {
   PriestsRoute: typeof PriestsRoute
   ReceiptRoute: typeof ReceiptRoute
   TimingsRoute: typeof TimingsRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  WelcomeRoute: typeof WelcomeRoute
   EventsSlugRoute: typeof EventsSlugRoute
   PaySlugRoute: typeof PaySlugRoute
   ServicesSlugRoute: typeof ServicesSlugRoute
@@ -586,6 +625,20 @@ declare module '@tanstack/react-router' {
       path: '/timings'
       fullPath: '/timings'
       preLoaderRoute: typeof TimingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -693,6 +746,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminHallsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/library': {
+      id: '/_authenticated/admin/library'
+      path: '/library'
+      fullPath: '/admin/library'
+      preLoaderRoute: typeof AuthenticatedAdminLibraryRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/payments': {
       id: '/_authenticated/admin/payments'
       path: '/payments'
@@ -764,6 +824,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCommunityRoute: typeof AuthenticatedAdminCommunityRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminHallsRoute: typeof AuthenticatedAdminHallsRoute
+  AuthenticatedAdminLibraryRoute: typeof AuthenticatedAdminLibraryRoute
   AuthenticatedAdminPaymentsRoute: typeof AuthenticatedAdminPaymentsRoute
   AuthenticatedAdminPeopleRoute: typeof AuthenticatedAdminPeopleRoute
   AuthenticatedAdminPoojasRoute: typeof AuthenticatedAdminPoojasRoute
@@ -777,6 +838,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCommunityRoute: AuthenticatedAdminCommunityRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminHallsRoute: AuthenticatedAdminHallsRoute,
+  AuthenticatedAdminLibraryRoute: AuthenticatedAdminLibraryRoute,
   AuthenticatedAdminPaymentsRoute: AuthenticatedAdminPaymentsRoute,
   AuthenticatedAdminPeopleRoute: AuthenticatedAdminPeopleRoute,
   AuthenticatedAdminPoojasRoute: AuthenticatedAdminPoojasRoute,
@@ -831,6 +893,8 @@ const rootRouteChildren: RootRouteChildren = {
   PriestsRoute: PriestsRoute,
   ReceiptRoute: ReceiptRoute,
   TimingsRoute: TimingsRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  WelcomeRoute: WelcomeRoute,
   EventsSlugRoute: EventsSlugRoute,
   PaySlugRoute: PaySlugRoute,
   ServicesSlugRoute: ServicesSlugRoute,

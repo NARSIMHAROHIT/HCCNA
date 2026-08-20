@@ -20,6 +20,7 @@ const TABS = [
   { to: "/admin/events", label: "Events & notices" },
   { to: "/admin/halls", label: "Hall rental" },
   { to: "/admin/community", label: "Board & donors" },
+  { to: "/admin/library", label: "Library" },
   { to: "/admin/people", label: "People & admins" },
   { to: "/admin/payments", label: "Payments" },
   { to: "/admin/audit", label: "Audit log" },

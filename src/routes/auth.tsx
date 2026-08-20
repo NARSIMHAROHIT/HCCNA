@@ -64,7 +64,9 @@ function AuthPage() {
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: `${window.location.origin}${next}`,
+            // A public thank-you page. Pointing this at a protected route sent
+            // devotees into the auth guard before their session existed.
+            emailRedirectTo: `${window.location.origin}/welcome`,
           },
         });
         if (error) {
@@ -83,7 +85,13 @@ function AuthPage() {
           toast.error("An account with this email already exists. Please sign in instead.");
           return;
         }
-        toast.success("Account created. You can start booking now.");
+        if (data.session) {
+          toast.success("Account created. You can start booking now.");
+        } else {
+          toast.success("Almost there — check your inbox to confirm your email address.");
+          setBusy(false);
+          return;
+        }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
@@ -101,6 +109,27 @@ function AuthPage() {
       navigate({ to: next, replace: true });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Sign in failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onForgotPassword() {
+    if (!email) {
+      toast.error("Please type your email address first, then choose 'Forgot password'.");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast.success("Check your inbox for a link to reset your password.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not send the password reset email.",
+      );
     } finally {
       setBusy(false);
     }
@@ -230,6 +259,16 @@ function AuthPage() {
               <Button type="submit" className="w-full" disabled={busy}>
                 {mode === "signin" ? "Sign in" : "Create account"}
               </Button>
+
+              {mode === "signin" ? (
+                <button
+                  type="button"
+                  onClick={onForgotPassword}
+                  className="w-full text-sm text-muted-foreground hover:text-foreground"
+                >
+                  Forgot your password?
+                </button>
+              ) : null}
             </form>
             <button
               type="button"

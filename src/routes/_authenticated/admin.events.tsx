@@ -17,7 +17,7 @@ const EVENT_FIELDS: FieldDef[] = [
   { name: "deity", label: "Deity" },
   { name: "location", label: "Location" },
   { name: "fee_cents", label: "Fee (USD)", type: "money" },
-  { name: "image_url", label: "Image URL", full: true },
+  { name: "image_url", label: "Event image", type: "image", folder: "events", full: true },
   { name: "registration_required", label: "Registration required", type: "checkbox" },
   { name: "is_annual", label: "Yearly / annual event", type: "checkbox" },
   { name: "volunteers_needed", label: "Volunteers needed", type: "checkbox" },
@@ -46,7 +46,7 @@ const ITEM_FIELDS: FieldDef[] = [
 ];
 
 const PHOTO_FIELDS: FieldDef[] = [
-  { name: "image_url", label: "Photo URL", full: true },
+  { name: "image_url", label: "Photograph", type: "image", folder: "gallery", full: true },
   { name: "title", label: "Title" },
   { name: "year", label: "Year", type: "number" },
   { name: "taken_on", label: "Taken on", type: "date" },

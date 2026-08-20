@@ -4,8 +4,10 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { ChangePassword } from "@/components/site/ChangePassword";
 import { PageHeader, Section } from "@/components/site/primitives";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@/hooks/useSession";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getMyDashboard, updateMyProfile } from "@/lib/booking.functions";
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
 });
 
 function ProfilePage() {
+  const { user } = useSession();
   const fetchDashboard = useServerFn(getMyDashboard);
   const save = useServerFn(updateMyProfile);
   const queryClient = useQueryClient();
@@ -90,6 +93,10 @@ function ProfilePage() {
             Save changes
           </Button>
         </form>
+
+        <div className="mx-auto mt-10 max-w-xl">
+          <ChangePassword {...(user?.email ? { email: user.email } : { email: undefined })} />
+        </div>
       </Section>
     </>
   );

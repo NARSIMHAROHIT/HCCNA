@@ -106,6 +106,37 @@ function Home() {
               </Button>
             </aside>
 
+            {upcomingEvents.length ? (
+              <aside className="surface-panel p-6">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="eyebrow">Upcoming events</p>
+                  <Link to="/events" className="text-sm font-semibold text-primary hover:underline">
+                    View all events
+                  </Link>
+                </div>
+                <GoldRule className="my-4" />
+                <ul className="space-y-3">
+                  {upcomingEvents.map((event) => (
+                    <li key={event.id}>
+                      <Link
+                        to="/events/$slug"
+                        params={{ slug: event.slug }}
+                        className="-mx-2 flex items-baseline justify-between gap-4 rounded-md px-2 py-2 transition hover:bg-accent/60"
+                      >
+                        <span className="min-w-0 truncate font-medium">{event.title}</span>
+                        <span className="shrink-0 text-sm text-muted-foreground">
+                          {formatInTimezone(event.starts_at, tz, {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+            ) : null}
+
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" className="flex-1">
                 <Link to="/services">
@@ -137,25 +168,6 @@ function Home() {
           ))}
         </div>
       </Section>
-
-      {upcomingEvents.length ? (
-        <Section tone="muted">
-          <SectionHeading
-            eyebrow="Community"
-            title="Upcoming events & festivals"
-            action={
-              <Button asChild variant="outline">
-                <Link to="/events">All events</Link>
-              </Button>
-            }
-          />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {upcomingEvents.map((e) => (
-              <EventCard key={e.id} event={e} timezone={tz} />
-            ))}
-          </div>
-        </Section>
-      ) : null}
 
       <Section>
         <div className="grid gap-8 md:grid-cols-[1.2fr_0.8fr] md:items-start">

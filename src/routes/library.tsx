@@ -28,6 +28,20 @@ export const Route = createFileRoute("/library")({
   component: Library,
 });
 
+type BookRow = { id: string; category: string | null } & Record<string, unknown>;
+
+/** Group books under their category heading, keeping the admin's display order. */
+function groupByCategory<T extends BookRow>(books: T[]): [string, T[]][] {
+  const groups: [string, T[]][] = [];
+  for (const book of books) {
+    const key = book.category ?? "Other resources";
+    const existing = groups.find(([name]) => name === key);
+    if (existing) existing[1].push(book);
+    else groups.push([key, [book]]);
+  }
+  return groups;
+}
+
 function Library() {
   const { data } = useSuspenseQuery(booksQuery);
   return (
@@ -41,28 +55,47 @@ function Library() {
         {data.books.length === 0 ? (
           <EmptyState title="The library is being catalogued" />
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {data.books.map((b) => (
-              <article key={b.id} className="surface-panel flex h-full flex-col p-5">
-                <h2 className="text-lg leading-snug">{b.title}</h2>
-                {b.author ? <p className="mt-1 text-sm text-muted-foreground">{b.author}</p> : null}
-                {b.description ? (
-                  <p className="mt-3 flex-1 text-sm text-muted-foreground">{b.description}</p>
-                ) : (
-                  <div className="flex-1" />
-                )}
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {b.category ? <Badge variant="secondary">{b.category}</Badge> : null}
-                  {b.language ? <Badge variant="secondary">{b.language}</Badge> : null}
+          <div className="space-y-12">
+            {groupByCategory(data.books).map(([category, books]) => (
+              <div key={category}>
+                <h2 className="text-2xl">{category}</h2>
+                <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {books.map((b) => (
+                    <article key={b.id} className="surface-panel flex h-full flex-col p-5">
+                      <h3 className="font-display text-lg leading-snug">{b.title}</h3>
+                      {b.author ? (
+                        <p className="mt-1 text-sm text-muted-foreground">{b.author}</p>
+                      ) : null}
+                      {b.description ? (
+                        <p className="mt-3 flex-1 text-sm text-muted-foreground">{b.description}</p>
+                      ) : (
+                        <div className="flex-1" />
+                      )}
+                      {b.language ? (
+                        <div className="mt-4 flex flex-wrap gap-1.5">
+                          <Badge variant="secondary">{b.language}</Badge>
+                        </div>
+                      ) : null}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {b.file_url ? (
+                          <Button asChild variant="outline" size="sm">
+                            <a href={b.file_url} target="_blank" rel="noreferrer">
+                              Download PDF
+                            </a>
+                          </Button>
+                        ) : null}
+                        {b.external_url ? (
+                          <Button asChild variant="outline" size="sm">
+                            <a href={b.external_url} target="_blank" rel="noreferrer">
+                              Read online
+                            </a>
+                          </Button>
+                        ) : null}
+                      </div>
+                    </article>
+                  ))}
                 </div>
-                {b.file_url || b.external_url ? (
-                  <Button asChild variant="outline" size="sm" className="mt-4">
-                    <a href={(b.file_url ?? b.external_url)!} target="_blank" rel="noreferrer">
-                      Open
-                    </a>
-                  </Button>
-                ) : null}
-              </article>
+              </div>
             ))}
           </div>
         )}

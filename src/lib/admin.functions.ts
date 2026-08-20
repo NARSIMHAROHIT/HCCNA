@@ -68,6 +68,7 @@ export const getAdminData = createServerFn({ method: "GET" })
       eventPhotos,
       halls,
       hallBookings,
+      books,
     ] = await Promise.all([
       supabase.from("temple_schedules").select("*").eq("temple_id", temple.id).order("day_of_week"),
       supabase
@@ -107,6 +108,7 @@ export const getAdminData = createServerFn({ method: "GET" })
         .eq("temple_id", temple.id)
         .order("starts_at", { ascending: false })
         .limit(200),
+      supabase.from("books").select("*").eq("temple_id", temple.id).order("display_order"),
     ]);
 
     return {
@@ -127,6 +129,7 @@ export const getAdminData = createServerFn({ method: "GET" })
       eventPhotos: eventPhotos.data ?? [],
       halls: halls.data ?? [],
       hallBookings: hallBookings.data ?? [],
+      books: books.data ?? [],
     };
   });
 

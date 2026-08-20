@@ -29,8 +29,12 @@ export const Route = createFileRoute("/contact")({
 function Contact() {
   const { data } = useSuspenseQuery(siteQuery);
   const t = data.temple;
+  // The postal address may be a P.O. Box, which Google cannot place on a map.
+  // `map_address` (Admin -> Temple details) is the physical location; fall back
+  // to the postal address when it has not been set.
   const mapQuery = encodeURIComponent(
-    [t.address_line1, t.city, t.state, t.postal_code].filter(Boolean).join(", "),
+    t.map_address?.trim() ||
+      [t.address_line1, t.city, t.state, t.postal_code].filter(Boolean).join(", "),
   );
 
   return (

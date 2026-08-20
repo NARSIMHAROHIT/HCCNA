@@ -17,6 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { deleteRecord, saveRecord } from "@/lib/admin.functions";
 
+import { ImageUploadField } from "./ImageUploadField";
+
 export type FieldType =
   | "text"
   | "textarea"
@@ -27,7 +29,9 @@ export type FieldType =
   | "datetime"
   | "time"
   | "list"
-  | "select";
+  | "select"
+  | "image"
+  | "file";
 
 export type FieldDef = {
   name: string;
@@ -36,6 +40,8 @@ export type FieldDef = {
   options?: { value: string; label: string }[];
   placeholder?: string;
   full?: boolean;
+  /** Storage folder for `type: "image"` fields, e.g. "events". */
+  folder?: string;
 };
 
 type Row = Record<string, unknown> & { id: string };
@@ -246,7 +252,15 @@ export function RecordDialog({
                 ) : (
                   <>
                     <Label htmlFor={id}>{f.label}</Label>
-                    {type === "textarea" ? (
+                    {type === "image" || type === "file" ? (
+                      <ImageUploadField
+                        id={id}
+                        kind={type === "file" ? "document" : "image"}
+                        value={String(state[f.name] ?? "")}
+                        onChange={(url) => setState((st) => ({ ...st, [f.name]: url }))}
+                        {...(f.folder ? { folder: f.folder } : {})}
+                      />
+                    ) : type === "textarea" ? (
                       <Textarea
                         id={id}
                         rows={4}

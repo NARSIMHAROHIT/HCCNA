@@ -35,6 +35,7 @@ Sign in and open **Admin** in the header (or go to `/admin`). Tabs:
 | Poojas & prices  | Pooja categories, each seva's price, duration, description, and deity photos     |
 | Events & notices | Events, timings, sponsors, pooja item lists, photo galleries, announcements      |
 | Hall rental      | Hall details, rates and rules, plus every hall booking request                   |
+| Library          | Books and scriptures shown on the public Library page                            |
 | Board & donors   | Board members and the donor wall                                                 |
 | People & admins  | Administrators, newsletter subscribers, event volunteers                         |
 | Payments         | Online payments and receipts                                                     |
@@ -58,8 +59,16 @@ the yearly calendar.
 _Items_ and _Sponsor_ fields. They show on the public event page next to the
 pooja.
 
-**Past-event photos** — Events & notices → Event photos. Attach a photo to an
-event (or just a year) and it appears in the gallery.
+**Past-event photos** — Events & notices → Event photos → Add. Click **Upload**
+and choose a picture from your computer (JPG, PNG, WebP or GIF, up to 15 MB); a
+thumbnail appears once it finishes. You can still paste a link instead if the
+photo already lives online. Attach it to an event, or just set a year, and it
+appears in the gallery. The same Upload button is on event images, book covers
+and the hero image.
+
+**Add a book** — Library → Add. Title and author are the essentials. Upload a
+cover image, and add a download link or a read-online link if the text is
+available. Books appear on the public Library page in display order.
 
 **Deity photo on a pooja page** — Poojas & prices → Deities. Give each deity an
 image; poojas that name that deity show the picture automatically.
@@ -111,17 +120,29 @@ old behaviour without any code change.
 
 ## 6. Images
 
-Paste a public image URL into any _image URL_ field (for example a link from the
-temple's Google Drive set to "anyone with the link", or any image host). Use
-landscape images around 1600×900 for event and hero pictures.
+Any image field has an **Upload** button — choose a file from your computer and
+it is stored with the website, no external hosting needed. Uploads are limited to
+15 MB and must be an image file. You can also paste a public image URL if you
+prefer. Use landscape images around 1600×900 for event and hero pictures.
 
-## 7. The audit log
+Only temple administrators can upload. If you see "You need temple administrator
+access to upload photos", ask an existing admin to add you under People & admins.
+
+## 7. The map on the Contact page
+
+The map uses **Map location** in Admin → Temple details, not the postal address —
+so a P.O. Box can stay as your mailing address while the map still points at the
+temple building. Enter the physical street address there, then open the Contact
+page to check the pin. If Map location is left empty the map falls back to the
+postal address.
+
+## 8. The audit log
 
 Every create, edit and delete of events, priests, donors and deities is recorded
 with the person's name, the date and time, and the exact before/after values of
 each field. Nothing in the log can be edited or removed.
 
-## 8. Reusing this site for another temple
+## 9. Reusing this site for another temple
 
 1. Duplicate the project.
 2. In **Admin → Temple details**, change the name, tagline, address, contact
