@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { deleteRecord, saveRecord } from "@/lib/admin.functions";
+import { cn } from "@/lib/utils";
 
 import { ImageUploadField } from "./ImageUploadField";
 
@@ -29,9 +30,20 @@ export type FieldType =
   | "datetime"
   | "time"
   | "list"
+  | "days"
   | "select"
   | "image"
   | "file";
+
+export const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
 
 export type FieldDef = {
   name: string;
@@ -49,7 +61,8 @@ type Row = Record<string, unknown> & { id: string };
 function toInput(value: unknown, type: FieldType): string | boolean {
   if (type === "checkbox") return Boolean(value);
   if (value === null || value === undefined) return "";
-  if (type === "list") return Array.isArray(value) ? value.join(", ") : String(value);
+  if (type === "list" || type === "days")
+    return Array.isArray(value) ? value.join(", ") : String(value);
   if (type === "money") return String(Number(value) / 100);
   if (type === "datetime") {
     const d = new Date(String(value));
@@ -63,7 +76,7 @@ function toInput(value: unknown, type: FieldType): string | boolean {
 function fromInput(raw: string | boolean, type: FieldType): unknown {
   if (type === "checkbox") return Boolean(raw);
   const value = String(raw);
-  if (type === "list") {
+  if (type === "list" || type === "days") {
     return value
       .split(",")
       .map((v) => v.trim())
@@ -183,6 +196,60 @@ function DeleteButton({ table, id }: { table: string; id: string }) {
   );
 }
 
+function DaysPicker({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  const selected = value
+    ? value
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    : [];
+  const allSelected = WEEKDAYS.every((d) => selected.includes(d));
+
+  function toggle(day: string) {
+    const next = selected.includes(day)
+      ? selected.filter((d) => d !== day)
+      : [...selected, day].sort((a, b) => WEEKDAYS.indexOf(a) - WEEKDAYS.indexOf(b));
+    onChange(next.join(", "));
+  }
+
+  return (
+    <div id={id} className="space-y-2">
+      <div className="flex flex-wrap gap-1.5">
+        {WEEKDAYS.map((day) => (
+          <button
+            key={day}
+            type="button"
+            onClick={() => toggle(day)}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs font-medium transition",
+              selected.includes(day)
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-input bg-background text-muted-foreground hover:bg-accent/60",
+            )}
+          >
+            {day.slice(0, 3)}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange(allSelected ? "" : WEEKDAYS.join(", "))}
+        className="text-xs font-medium text-primary hover:underline"
+      >
+        {allSelected ? "Clear all" : "Select all days"}
+      </button>
+    </div>
+  );
+}
+
 export function RecordDialog({
   table,
   singular,
@@ -259,6 +326,12 @@ export function RecordDialog({
                         value={String(state[f.name] ?? "")}
                         onChange={(url) => setState((st) => ({ ...st, [f.name]: url }))}
                         {...(f.folder ? { folder: f.folder } : {})}
+                      />
+                    ) : type === "days" ? (
+                      <DaysPicker
+                        id={id}
+                        value={String(state[f.name] ?? "")}
+                        onChange={(next) => setState((s) => ({ ...s, [f.name]: next }))}
                       />
                     ) : type === "textarea" ? (
                       <Textarea

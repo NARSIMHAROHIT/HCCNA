@@ -39,7 +39,7 @@ const PRIEST_FIELDS: FieldDef[] = [
   { name: "email", label: "Email" },
   { name: "photo_url", label: "Photo URL" },
   { name: "working_since", label: "Working at the temple since", type: "date" },
-  { name: "working_days", label: "Working days (comma separated)", type: "list", full: true },
+  { name: "working_days", label: "Working days", type: "days", full: true },
   { name: "display_order", label: "Display order", type: "number" },
   { name: "is_active", label: "Active", type: "checkbox" },
   { name: "qualifications", label: "Qualifications", type: "textarea" },

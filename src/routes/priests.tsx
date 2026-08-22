@@ -41,10 +41,54 @@ function Priests() {
       />
 
       <Section>
+        <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-muted-foreground">
+          <p>
+            Priests in Hindu temples usually come from families with long heritage of priesthood.
+            They are well-versed in Hindu scriptures and Sanskrit language in which most of the
+            scriptures are written. The priests carry out the worship in the temple on behalf of
+            other devotees. It is hence parartha, a service conducted for the sake of others. This
+            worship of the deities is known as pooja and devotees can request such a service to the
+            deity of their choice. Each deity is worshipped in a different way -- rituals are
+            different and different Sanskrit Mantras are chanted.
+          </p>
+          <p>
+            Typically temple priests do not engage in preaching (which is done by Swamijis, or Hindu
+            monks). They will, however, explain the meaning of the pooja if asked. The priest
+            performs the daily ceremonial ritual, &apos;pooja&apos;, which includes making offerings
+            to the God, showering the idol with flowers, and on special occasions, milk, honey and
+            curd. Towards the end of the pooja, an oil lamp with one or several wicks is lit called
+            Aarati (sacred flame). With ringing of bells and gongs and chanting of mantras the
+            Aarati is waved slowly in front of the deity around in a vertical oval traversing the
+            whole deity from head to foot. After the ceremony, holy water, sacred flame and prasad
+            are offered as blessings to the attending devotees to absorb the spiritual vibrations.
+            The priest offers a spoonful of the holy water to all the attending devotees. This is
+            accepted with a cupped right hand, sipped and then the right palm is touched to the
+            forehead. When the sacred flame is brought around, with palms facing down, one reaches
+            out both hands gently over the flame and then touch the hands to one&apos;s eyes. The
+            &apos;Prasad&apos; is an edible offering, generally a fruit or a sweet, which is
+            accepted reverentially with a cupped right hand before eating.
+          </p>
+          <p>
+            Temple Priests perform daily poojas to the deities in the temple in the morning and
+            evening to maintain the sanctity and the spiritual atmosphere in the temple.
+          </p>
+          <h2 className="pt-2 font-display text-xl text-foreground">HCCNA Priests</h2>
+          <p>
+            The priests at HCCNA are well versed in Ágama Sastras and Vedic Sastras. They have
+            extensive experience in performing Archanas, Poojas, Homas and Abhishekams. They are
+            highly qualified and well versed in all Hindu scriptures with years of experience in
+            performing all poojas and ceremonies. They are also specialized in deity decorations,
+            especially Moola and Utsav Murthy(s). Priest services are also available to devotees
+            homes. Devotees have praised their high standard of performance and the manner in which
+            poojas and abhisekams are conducted with dedication and quality. They are conversant in
+            several languages including Hindi, Gujarati, Telugu, Odia, Tamil, Kannada and English.
+          </p>
+        </div>
+
         {active.length === 0 ? (
           <EmptyState title="Priest profiles coming soon" />
         ) : (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {active.map((p) => (
               <PriestCard key={p.id} priest={p} />
             ))}
